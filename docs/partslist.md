@@ -17,7 +17,7 @@
 
 ## Zu kaufen
 
-Stand der Bestellung: ✅ bestellt (AliExpress, 31.10.2026), ❌ fehlt noch.
+Stand der Bestellung: ✅ bestellt (AliExpress und Amazon, 31.10.2026), ❌ fehlt noch.
 
 | | Teil | Menge | Bemerkung |
 |---|---|---|---|
@@ -30,7 +30,7 @@ Stand der Bestellung: ✅ bestellt (AliExpress, 31.10.2026), ❌ fehlt noch.
 | ✅ | Kapazitiver Bodenfeuchtesensor (v1.2, analog) | 1 | **Bestellt:** (Chip bei Lieferung prüfen: TLC555?). 3,3 V versorgen; auf **TLC555** achten (NE555-Varianten laufen an 3,3 V oft nicht). Keine resistiven Sensoren (Korrosion, Dünger verfälscht den Wert) |
 | ✅ | ADS1115 (ADC, I²C) | 1 | im Controllergehäuse; der Pi hat keine Analogeingänge |
 | ❌ | Schuko-Einbausteckdose | 2 | Heizung, Lampe |
-| ❌ | Kaltgeräte-Einbaubuchse C14 mit Sicherung + Schalter | 1 | 230-V-Eingang |
+| ✅ | Kaltgeräte-Einbaubuchse C14 mit Sicherung + Schalter | 1 | **Bestellt:** Amazon. 230-V-Eingang |
 | ❌ | GX12 Stecker/Buchse 2-polig | 1 Paar | Pumpe |
 | ❌ | GX12 Stecker/Buchse 3-polig | 1 Paar | Bodensensor |
 | ❌ | GX12 Stecker/Buchse 4-polig | 1 Paar | Temperatur/Feuchte |
