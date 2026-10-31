@@ -6,7 +6,7 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 
 ## Aktueller Stand
 
-- **Phase:** 4–6 umgesetzt, Release `v0.2.0` veröffentlicht (ECS über Watchtower).
+- **Phase:** 4–6 umgesetzt, Release `v0.2.2` (inkl. Verdrahtungsplänen und Übersicht) auf ECS ausgerollt.
 - **Nächster Schritt:** ECS-Stack in Portainer neu deployen (neue Compose-Variablen), Pi einrichten (3.5), Teile bestellen (1.5), danach 4.3 auf echter Hardware testen.
 - **Zuletzt aktualisiert:** 2026-10-31
 
