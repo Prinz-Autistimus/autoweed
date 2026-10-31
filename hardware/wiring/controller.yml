@@ -1,0 +1,165 @@
+# Interne Verdrahtung im Controller-Gehäuse.
+# Rendern: wireviz controller.yml  (siehe README.md)
+#
+# Pinbelegung des Pi wie in docs/architecture.md (BCM 17/27/22).
+# Die 230-V-Seite ist nur als Anschlussblock eingezeichnet; deren Verdrahtung
+# (Netzteil-Eingang, C14, Schuko, Relaiskontakte) legt die Elektrofachkraft fest.
+
+metadata:
+  title: AutoWeed – Controller (intern)
+
+connectors:
+  PI:
+    type: Raspberry Pi 3
+    subtype: GPIO-Leiste (nur belegte Pins)
+    pins: [1, 3, 5, 6, 9, 11, 13, 14, 15, 17]
+    pinlabels: [3V3, SDA (GPIO2), SCL (GPIO3), GND, GND, GPIO17 Heizung, GPIO27 Licht, GND, GPIO22 Pumpe, 3V3]
+  PI_USB:
+    type: Raspberry Pi 3
+    subtype: Micro-USB (Stromversorgung)
+    pinlabels: [VBUS 5V, GND]
+  PSU:
+    type: Netzteil 230 V → 12 V 6 A
+    subtype: Ausgang (Schraubklemmen)
+    pinlabels: [+V, -V]
+    notes: Eingang L/N/PE über C14 – Elektrofachkraft
+  DCDC:
+    type: DC-DC-Wandler 12 → 5 V 5 A
+    pinlabels: [IN+, IN-, OUT+, OUT-]
+    notes: Ausgang vor dem Anschließen des Pi messen (5,0–5,2 V)
+  ADS:
+    type: ADS1115
+    subtype: I²C-Adresse 0x48
+    pinlabels: [VDD, GND, SCL, SDA, ADDR, ALRT, A0, A1, A2, A3]
+    loops: [[5, 2]]   # ADDR (Pin 5) an GND (Pin 2)
+    notes: ADDR an GND → Adresse 0x48. A1–A3 frei.
+  REL_IN:
+    type: Relais-Modul 2-Kanal
+    subtype: Steuerseite
+    pinlabels: [GND, IN1, IN2, VCC]
+    notes: GND hier nicht anschließen (Masse über JD-Header). Schaltet bei LOW.
+  REL_JD:
+    type: Relais-Modul 2-Kanal
+    subtype: JD-VCC-Header (Jumper entfernen!)
+    pinlabels: [GND, VCC, JD-VCC]
+    notes: VCC bleibt frei, die Spulen bekommen 5 V über JD-VCC.
+  REL_LOAD:
+    type: Relais-Modul 2-Kanal
+    subtype: Lastseite 230 V
+    pinlabels: [K1 COM, K1 NO, K1 NC, K2 COM, K2 NO, K2 NC]
+    notes: K1 = Heizung, K2 = Lampe. Verdrahtung zur Schuko-Dose – Elektrofachkraft.
+  MOS:
+    type: MOSFET-Modul D4184
+    pinlabels: [VIN+, VIN-, OUT+, OUT-, TRIG, GND]
+  J_CLIMATE:
+    type: GX12 Einbaubuchse
+    subtype: 4-polig – Temperatur/Feuchte
+    pinlabels: [3V3, GND, SDA, SCL]
+  J_SOIL:
+    type: GX12 Einbaubuchse
+    subtype: 3-polig – Bodenfeuchte
+    pinlabels: [3V3, GND, AOUT]
+  J_PUMP:
+    type: GX12 Einbaubuchse
+    subtype: 2-polig – Pumpe 12 V
+    pinlabels: [+12V, GND]
+
+cables:
+  W_PSU_DCDC:
+    wirecount: 2
+    colors: [RD, BK]
+    gauge: 0.75 mm2
+    length: 0.15
+  W_PSU_MOS:
+    wirecount: 2
+    colors: [RD, BK]
+    gauge: 0.5 mm2
+    length: 0.15
+  W_PI_POWER:
+    type: Micro-USB-Pigtail
+    wirecount: 2
+    colors: [RD, BK]
+    length: 0.2
+  W_RELAY_POWER:
+    wirecount: 2
+    colors: [OG, BK]
+    gauge: 0.25 mm2
+    length: 0.15
+  W_I2C_ADS:
+    wirecount: 4
+    colors: [RD, BK, YE, GN]
+    gauge: 0.14 mm2
+    length: 0.1
+  W_I2C_CLIMATE:
+    wirecount: 4
+    colors: [RD, BK, GN, YE]
+    gauge: 0.14 mm2
+    length: 0.15
+  W_SOIL_POWER:
+    wirecount: 2
+    colors: [RD, BK]
+    gauge: 0.14 mm2
+    length: 0.15
+  W_SOIL_SIGNAL:
+    wirecount: 1
+    colors: [WH]
+    gauge: 0.14 mm2
+    length: 0.1
+  W_RELAY_CTRL:
+    wirecount: 3
+    colors: [RD, BU, VT]
+    gauge: 0.14 mm2
+    length: 0.15
+  W_MOS_CTRL:
+    wirecount: 2
+    colors: [GY, BK]
+    gauge: 0.14 mm2
+    length: 0.15
+  W_PUMP_OUT:
+    wirecount: 2
+    colors: [RD, BK]
+    gauge: 0.5 mm2
+    length: 0.1
+
+connections:
+  # 12 V → 5-V-Wandler und Pumpenzweig
+  - - PSU: [+V, -V]
+    - W_PSU_DCDC: [1-2]
+    - DCDC: [IN+, IN-]
+  - - PSU: [+V, -V]
+    - W_PSU_MOS: [1-2]
+    - MOS: [VIN+, VIN-]
+  # 5 V → Pi und Relais-Spulen
+  - - DCDC: [OUT+, OUT-]
+    - W_PI_POWER: [1-2]
+    - PI_USB: [VBUS 5V, GND]
+  - - DCDC: [OUT+, OUT-]
+    - W_RELAY_POWER: [1-2]
+    - REL_JD: [JD-VCC, GND]
+  # I²C-Bus: ADS1115 und Buchse für den SHT40
+  - - PI: [1, 6, 5, 3]
+    - W_I2C_ADS: [1-4]
+    - ADS: [VDD, GND, SCL, SDA]
+  - - PI: [17, 9, 3, 5]
+    - W_I2C_CLIMATE: [1-4]
+    - J_CLIMATE: [3V3, GND, SDA, SCL]
+  # Bodenfeuchte: Versorgung vom Pi, Signal an ADS1115 A0
+  - - PI: [1, 6]
+    - W_SOIL_POWER: [1-2]
+    - J_SOIL: [3V3, GND]
+  - - ADS: [A0]
+    - W_SOIL_SIGNAL: [1]
+    - J_SOIL: [AOUT]
+  # Relais: VCC 3,3 V (Optokoppler-LED), IN1 Heizung, IN2 Lampe
+  - - PI: [17, 11, 13]
+    - W_RELAY_CTRL: [1-3]
+    - REL_IN: [VCC, IN1, IN2]
+  # Pumpe
+  - - PI: [15, 14]
+    - W_MOS_CTRL: [1-2]
+    - MOS: [TRIG, GND]
+  - - MOS: [OUT+, OUT-]
+    - W_PUMP_OUT: [1-2]
+    - J_PUMP: [+12V, GND]
+  # Lastseite nur als Block (ohne Verbindungen)
+  - - REL_LOAD

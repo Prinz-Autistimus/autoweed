@@ -21,9 +21,8 @@ Stand der Bestellung: ✅ bestellt (AliExpress und Amazon, 31.10.2026), ❌ fehl
 
 | | Teil | Menge | Bemerkung |
 |---|---|---|---|
-| ❌ | microSD 32 GB, „High Endurance“ | 1 | hält Dauerschreiben besser aus |
-| ❌ | Micro-USB-Kabel mit offenen Enden (Pigtail) | 1 | Pi vom 5-V-Ausgang des Netzteils versorgen; nicht über die GPIO-Pins, sonst fehlt die Schutzschaltung des Pi |
-| ✅ | Netzteil 230 V → **5 V + 12 V** | 1 | **Bestellt:** 12 V 6 A (75 W) + DC-DC 12 → 5 V 5 A. 5 V ≥ 3 A (Pi 3 braucht 2,5 A, Reserve für die Kamera); 12 V passend zum Pumpenstrom |
+| ✅ | microSD 32 GB, „High Endurance“ | 1 | hält Dauerschreiben besser aus |
+| ✅ | Micro-USB-Kabel mit offenen Enden (Pigtail) | 1 | Pi vom 5-V-Ausgang des Netzteils versorgen; nicht über die GPIO-Pins, sonst fehlt die Schutzschaltung des Pi  ✅ | Netzteil 230 V → **5 V + 12 V** | 1 | **Bestellt:** 12 V 6 A (75 W) + DC-DC 12 → 5 V 5 A. 5 V ≥ 3 A (Pi 3 braucht 2,5 A, Reserve für die Kamera); 12 V passend zum Pumpenstrom |
 | ❌ | Relais-Modul 2-Kanal, 5-V-Spulen, 10 A / 250 VAC, mit Optokoppler und **JD-VCC-Jumper** | 1 | Heizung + Lampe; VCC an 3,3 V vom Pi, JD-VCC an 5 V, siehe Hinweise |
 | ✅ | MOSFET-Modul, Logic-Level (z. B. D4184 / AOD4184) | 1 | **Bestellt:** D4184. Pumpe 12 V; **kein IRF520** (schaltet bei 3,3 V nicht richtig durch) |
 | ✅ | SHT40-Sonde (Edelstahl, I²C, 4 Adern, ca. 1 m Kabel) | 1 | **Bestellt:** (Kabellänge bei Lieferung prüfen). hängt oben im Zelt; an 3,3 V vom Pi, **nicht an 5 V**; Adresse 0x44 |

@@ -1,0 +1,67 @@
+# Externe Kabel: Sensoren und Pumpe mit GX12-Steckern.
+# Rendern: wireviz cables.yml  (siehe README.md)
+#
+# Pinbelegung der GX12-Stecker passt zu den Einbaubuchsen in controller.yml.
+# Die Aderfarben der Sensorkabel bei Lieferung prüfen und hier ggf. anpassen.
+
+metadata:
+  title: AutoWeed – Kabel zu Sensoren und Pumpe
+
+connectors:
+  SHT40:
+    type: SHT40-Sonde (Edelstahl)
+    subtype: Kabelende
+    pinlabels: [VCC, GND, SDA, SCL]
+    notes: Nur 3,3 V! Pull-ups (10 kΩ) sind in der Sonde.
+  P_CLIMATE:
+    type: GX12 Stecker
+    subtype: 4-polig
+    pinlabels: [3V3, GND, SDA, SCL]
+  SOIL:
+    type: Kapazitiver Bodenfeuchtesensor v1.2
+    subtype: JST-PH-Buchse
+    pinlabels: [GND, VCC, AOUT]
+    notes: TLC555-Variante, an 3,3 V.
+  P_SOIL:
+    type: GX12 Stecker
+    subtype: 3-polig
+    pinlabels: [3V3, GND, AOUT]
+  PUMP:
+    type: Tauchpumpe 12 V
+    subtype: Kabelende
+    pinlabels: [+, '-']
+  P_PUMP:
+    type: GX12 Stecker
+    subtype: 2-polig
+    pinlabels: [+12V, GND]
+
+cables:
+  W_SHT40:
+    type: Kabel der Sonde
+    wirecount: 4
+    colors: [RD, BK, GN, YE]
+    length: 1
+  W_SOIL:
+    type: Verlängerung, abgeschirmt empfohlen
+    wirecount: 3
+    colors: [BK, RD, YE]
+    gauge: 0.14 mm2
+    length: 2
+    notes: Länge an Zelt und Topf anpassen (Controller liegt oben auf dem Zelt).
+  W_PUMP:
+    type: Pumpenkabel, ggf. verlängert
+    wirecount: 2
+    colors: [RD, BK]
+    gauge: 0.5 mm2
+    length: 2
+
+connections:
+  - - SHT40: [VCC, GND, SDA, SCL]
+    - W_SHT40: [1-4]
+    - P_CLIMATE: [3V3, GND, SDA, SCL]
+  - - SOIL: [GND, VCC, AOUT]
+    - W_SOIL: [1-3]
+    - P_SOIL: [GND, 3V3, AOUT]
+  - - PUMP: [+, '-']
+    - W_PUMP: [1-2]
+    - P_PUMP: [+12V, GND]

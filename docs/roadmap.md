@@ -83,7 +83,7 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [ ] 6.7 Mobile Ansicht — Layout responsiv gebaut, auf dem Handy noch nicht geprüft
 
 ## Phase 7: Hardware
-- [ ] 7.1 Schaltplan und GPIO-Belegung
+- [x] 7.1 Schaltplan und GPIO-Belegung — Verdrahtungspläne in `hardware/wiring/` (WireViz, gerendert im Release)
 - [ ] 7.2 Kleinspannungsseite aufbauen und testen (Pi, ADS1115, SHT, MOSFET, Relais ohne Last)
 - [ ] 7.3 230-V-Seite durch den Elektrotechniker (Netzteil, Relais, Schuko, C14)
 - [ ] 7.4 Gehäuse konstruieren und in PETG drucken: Controller (GX12, USB, RJ45 in der Wand) und Sensorgehäuse

@@ -21,6 +21,7 @@ crates/shared   API-Typen (auch als TypeScript für das Frontend)
 crates/board    Board-Software
 crates/ecs      ECS-Backend
 frontend        WebUI (React, Vite, TypeScript)
+hardware/wiring Verdrahtungspläne (WireViz)
 deploy          Compose-Dateien für Portainer
 docs            Dokumentation
 ```
