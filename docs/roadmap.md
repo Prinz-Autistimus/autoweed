@@ -6,8 +6,8 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 
 ## Aktueller Stand
 
-- **Phase:** 3 (Compose-Dateien und Anleitung fertig; Teilebestellung 1.5 offen).
-- **Nächster Schritt:** 2.4 mit dem Tag `v0.1.0` testen, danach 3.5: Pi nach `deploy/README.md` einrichten (macht der Benutzer) und die Stacks deployen.
+- **Phase:** 3 (Release `v0.1.0` veröffentlicht; Teilebestellung 1.5 offen).
+- **Nächster Schritt:** 3.5: Pi nach `deploy/README.md` einrichten (macht der Benutzer) und die Stacks deployen.
 - **Zuletzt aktualisiert:** 2026-10-31
 
 ## Offene Punkte
@@ -41,7 +41,7 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [x] 2.1 GitHub Actions: `cargo check`/`clippy`, Frontend-Build
 - [x] 2.2 Docker-Image `autoweed-board` (linux/arm64, nativer arm64-Runner) → GHCR
 - [x] 2.3 Docker-Image `autoweed-ecs` (linux/amd64, mit Frontend) → GHCR
-- [ ] 2.4 Releases über Git-Tags (`v*`), Images mit Version + `latest` taggen
+- [x] 2.4 Releases über Git-Tags (`v*`), Images mit Version + `latest` taggen
 
 ## Phase 3: Deployment-Gerüst
 - [x] 3.1 `deploy/pi-compose.yml` (Board, Watchtower)
