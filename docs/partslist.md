@@ -36,10 +36,10 @@ Stand der Bestellung: ✅ bestellt (AliExpress, 31.10.2026), ❌ fehlt noch.
 | ❌ | GX12 Stecker/Buchse 4-polig | 1 Paar | Temperatur/Feuchte |
 | ❌ | USB-A-Einbau-Verlängerung | 1–2 | für die spätere Kamera |
 | ✅ | RJ45-Einbau-Verlängerung | 1 | **Bestellt:** 20 cm. LAN-Buchse in der Gehäusewand |
-| ✅ SUNLU matt schwarz | PETG-Filament | 1 kg | |
+| ✅ | PETG-Filament | 1 kg | **Bestellt:** SUNLU matt schwarz. |
 | ✅ | Einschmelzmuttern M3 (Länge ca. 4–5,7 mm) | ~50 | **Bestellt:** Set M2/M3/M4 mit Schrauben. Gehäuse, Deckel, Relais-Modul, Netzteil, MOSFET-Modul |
 | ✅ | Einschmelzmuttern M2.5 (Länge ca. 4 mm) | ~10 | **Bestellt:** 500 Stück. Raspberry Pi (Bohrungen 2,7 mm), ADS1115 |
-| ✅ im Einschmelzmuttern-Set (Kreuzschlitz) | Zylinderschrauben M3, DIN 912, Edelstahl A2, 6/8/10/12/16 mm | Sortiment | |
+| ✅ | Zylinderschrauben M3, DIN 912, Edelstahl A2, 6/8/10/12/16 mm | Sortiment | **Bestellt:** im Einschmelzmuttern-Set (Kreuzschlitz). |
 | ❌ | Zylinderschrauben M2.5, DIN 912, Edelstahl A2, 6/8 mm | Sortiment | |
 | ❌ | Kleinmaterial | | Litze, Aderendhülsen, Schrumpfschlauch, Kabelbinder |
 
