@@ -252,3 +252,11 @@ impl Default for BoardConfig {
         }
     }
 }
+
+impl SoilCalibration {
+    /// Rechnet einen ADS1115-Rohwert in Bodenfeuchte (0–100 %) um.
+    pub fn percent(&self, raw: i16) -> f32 {
+        let (dry, wet) = (f32::from(self.dry_raw), f32::from(self.wet_raw));
+        ((dry - f32::from(raw)) / (dry - wet) * 100.0).clamp(0.0, 100.0)
+    }
+}

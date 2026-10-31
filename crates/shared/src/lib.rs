@@ -3,8 +3,10 @@
 //! Alle Typen mit `#[ts(export)]` werden bei `cargo test -p autoweed-shared`
 //! als TypeScript nach `frontend/src/generated/` geschrieben.
 
+mod api;
 mod config;
 
+pub use api::*;
 pub use config::*;
 
 use serde::{Deserialize, Serialize};
