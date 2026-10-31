@@ -1,0 +1,3 @@
+# ts-rs schreibt die TypeScript-Typen beim `cargo test -p autoweed-shared` hierhin.
+[env]
+TS_RS_EXPORT_DIR = { value = "frontend/src/generated", relative = true }

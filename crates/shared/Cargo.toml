@@ -1,0 +1,10 @@
+[package]
+name = "autoweed-shared"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde = { version = "1.0.229", features = ["derive"] }
+ts-rs = "12.0.1"

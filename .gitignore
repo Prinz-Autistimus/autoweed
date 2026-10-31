@@ -1,0 +1,17 @@
+# Rust
+/target/
+
+# Frontend
+node_modules/
+/frontend/dist/
+
+# Umgebungsvariablen (Vorlage: deploy/.env.example)
+.env
+*.env
+!*.env.example
+
+# Editor / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
