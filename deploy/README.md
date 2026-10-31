@@ -15,7 +15,7 @@ Beide Stacks werden aus dem Portainer auf ECS verwaltet. Auf dem Pi läuft dafü
    - Benutzer und Passwort
    - SSH aktivieren (am besten mit Public Key)
    - WLAN leer lassen: Der Pi hängt per LAN am Devolo.
-2. In der Fritz!Box für den Pi eine **feste IP** reservieren (DHCP-Reservierung). Sie wird für `BOARD_URL` und den Agent gebraucht.
+2. Im Router für den Pi eine **feste IP** reservieren (DHCP-Reservierung). Sie wird für `BOARD_URL` und den Agent gebraucht.
 3. Per SSH einloggen und das System aktualisieren:
    ```bash
    sudo apt update && sudo apt full-upgrade -y
@@ -78,7 +78,7 @@ Die Werte für die Variablen erzeugt man mit `openssl rand -hex 32`. `BOARD_TOKE
 - Compose path: `deploy/host-compose.yml`
 - Environment variables: `BOARD_TOKEN`, `BOARD_URL`, `WEBUI_PASSWORD`, `NTFY_TOPIC`, `INFLUX_PASSWORD`, `INFLUX_TOKEN` (optional `PUBLIC_URL`, `AUTOWEED_PORT`, `NTFY_URL`, `POLL_INTERVAL_SECS`, `AUTOWEED_TAG`). `WEBUI_PASSWORD` braucht mindestens 8 Zeichen.
 
-Die WebUI ist dann unter `http://192.168.178.47:8097` erreichbar. Für den Zugriff von außen wird im Nginx Proxy Manager ein Proxy Host auf diesen Port angelegt.
+Die WebUI ist dann unter `http://<ecs-ip>:8097` erreichbar. Für den Zugriff von außen wird im Nginx Proxy Manager ein Proxy Host auf diesen Port angelegt.
 
 ## 4. Lokal entwickeln (ohne Pi)
 

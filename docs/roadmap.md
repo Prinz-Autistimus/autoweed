@@ -93,9 +93,9 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [ ] 8.1 Bodensensor kalibrieren (trocken/nass)
 - [ ] 8.2 Probelauf ohne Pflanze (mehrere Tage)
 - [ ] 8.3 Fail-Safe-Tests nach der Matrix: Sensor abziehen, Container killen, LAN trennen, ECS stoppen, Strom weg
-- [ ] 8.4 Proxy-Host im NPM (erledigt: weed.autismclan.de), ntfy-Topic (zufälliger Name) in der App abonnieren
+- [ ] 8.4 Proxy-Host im NPM (erledigt), ntfy-Topic (zufälliger Name) in der App abonnieren
 - [ ] 8.5 Erster Grow 🌱
 
 ## Später
 - [ ] Kamera über USB
-- [ ] ntfy-Access-Tokens (betrifft den Fax-Stack)
+- [ ] ntfy-Access-Tokens

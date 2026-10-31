@@ -117,8 +117,8 @@ Das Repo enthält zwei fertige Setups, die direkt als Portainer-Stack eingefügt
 | `deploy/host-compose.yml` | ECS | `autoweed-ecs` (Backend + WebUI), InfluxDB, Watchtower |
 
 - Variable Werte (API-Token, WebUI-Passwort, Board-Adresse, InfluxDB-Zugang) kommen als Umgebungsvariablen aus Portainer. Eine `deploy/.env.example` dokumentiert sie.
-- **ntfy** ist nicht Teil des Stacks. Benutzt wird die bestehende Instanz auf ECS: Stack `home_lax` (Fax), Host-Port 8090, öffentlich unter `https://ntfy.familie-nacken.de`. `autoweed-ecs` bekommt `NTFY_URL` und `NTFY_TOPIC` als Umgebungsvariablen. Der Stack hängt sich bewusst nicht in das Netzwerk `home_lax_fax-net`, damit er unabhängig vom Fax-Stack bleibt.
-- ntfy läuft derzeit **ohne Authentifizierung**. Wer den Topic-Namen kennt, kann mitlesen und Nachrichten senden. Der Topic-Name muss deshalb zufällig sein (z. B. `autoweed-<zufall>`). Eine spätere Option sind ntfy-Access-Tokens, das würde aber den Fax-Stack ändern.
+- **ntfy** ist nicht Teil des Stacks. Benutzt wird eine bereits vorhandene, selbst gehostete ntfy-Instanz. `autoweed-ecs` bekommt `NTFY_URL` und `NTFY_TOPIC` als Umgebungsvariablen und erreicht ntfy standardmäßig über dessen Host-Port (`host.docker.internal:8090`).
+- Der Topic-Name sollte zufällig gewählt werden (z. B. `autoweed-<zufall>`), sofern die ntfy-Instanz keine Zugriffskontrolle nutzt.
 - Watchtower: Das Original `containrrr/watchtower` ist seit Dezember 2025 archiviert und hat Probleme mit Docker 29 (ECS läuft mit 29.4). Verwendet wird deshalb der gepflegte Fork `nicholas-fedor/watchtower`. Bisher läuft auf ECS noch kein Watchtower.
 - Watchtower läuft in beiden Stacks mit `--label-enable` und aktualisiert **nur** die Container mit dem Label `com.centurylinklabs.watchtower.enable=true`. So fasst es die übrigen Container auf ECS nicht an.
 - `autoweed-board` läuft mit `restart: always`. Es bekommt die Geräte `/dev/gpiochip0` und `/dev/i2c-1` und ein Volume für die lokale Konfigurationskopie.
