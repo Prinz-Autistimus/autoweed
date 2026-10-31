@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq graphviz
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq graphviz librsvg2-bin
       - run: pipx install wireviz
       - name: Verdrahtungspläne rendern
         run: |
@@ -63,6 +63,12 @@ jobs:
           for plan in hardware/wiring/*.yml; do
             wireviz -o wiring-out "$plan"
           done
+      - name: Übersicht rendern (und prüfen, ob overview.svg im Repo aktuell ist)
+        run: |
+          python3 hardware/wiring/overview.py wiring-out/overview.svg
+          diff -q wiring-out/overview.svg hardware/wiring/overview.svg \
+            || { echo "::error::hardware/wiring/overview.svg ist veraltet: python3 hardware/wiring/overview.py hardware/wiring/overview.svg"; exit 1; }
+          rsvg-convert -w 2840 -o wiring-out/overview.png wiring-out/overview.svg
           ls -l wiring-out
       - uses: actions/upload-artifact@v7
         with:

@@ -40,6 +40,7 @@ Stand der Bestellung: ✅ bestellt (AliExpress und Amazon, 31.10.2026), ❌ fehl
 | ✅ | Einschmelzmuttern M2.5 (Länge ca. 4 mm) | ~10 | **Bestellt:** 500 Stück. Raspberry Pi (Bohrungen 2,7 mm), ADS1115 |
 | ✅ | Zylinderschrauben M3, DIN 912, Edelstahl A2, 6/8/10/12/16 mm | Sortiment | **Bestellt:** im Einschmelzmuttern-Set (Kreuzschlitz). |
 | ❌ | Zylinderschrauben M2.5, DIN 912, Edelstahl A2, 6/8 mm | Sortiment | |
+| ❌ | Lochrasterplatine (Streifenraster) + Stiftleisten | 1 | Verteiler für 3V3, GND, SDA, SCL (an jeden Pi-Pin passt nur ein Stecker) |
 | ❌ | Kleinmaterial | | Litze, Aderendhülsen, Schrumpfschlauch, Kabelbinder |
 
 ## Hinweise
