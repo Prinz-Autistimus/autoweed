@@ -72,7 +72,7 @@ Alles soll sauber verpackt sein. Board-Computer, Netzteil und Relais sitzen in e
 - **Erkennung „Eimer leer“:** Steigt die Bodenfeuchtigkeit nach mehreren Gießvorgängen nicht an, sperrt das System die Pumpe und schickt eine ntfy-Benachrichtigung. Einen Füllstandssensor gibt es nicht.
 
 ## Stromversorgung
-Ein fertiges 230-V-Netzteil mit mehreren Ausgängen (3,3 / 5 / 12 / 24 V, Schraubklemmen) versorgt alle Kleinverbraucher: Raspberry Pi, Sensoren, Relais-Board und Pumpe. Das Gehäuse des Boards enthält **zwei geschaltete Schuko-Einbausteckdosen**, eine für die E-Heizung und eine für die Grow-Lampe.
+Ein 230-V-Netzteil liefert **5 V** (Raspberry Pi, Relais-Spulen) und **12 V** (Pumpe), Varianten siehe [partslist.md](partslist.md). Die 3,3 V für Sensoren und Relais-Ansteuerung kommen vom Pi selbst. Das Gehäuse des Boards enthält **zwei geschaltete Schuko-Einbausteckdosen**, eine für die E-Heizung und eine für die Grow-Lampe.
 
 ## Ausblick (nach dem MVP)
 - Kamera-Anbindung über USB
