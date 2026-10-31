@@ -35,7 +35,11 @@
 | USB-A-Einbau-Verlängerung | 1–2 | für die spätere Kamera |
 | RJ45-Einbau-Verlängerung | 1 | LAN-Buchse in der Gehäusewand |
 | PETG-Filament | 1 kg | |
-| Kleinmaterial | | Litze, Aderendhülsen, Schrumpfschlauch, Schrauben/Einschmelzmuttern |
+| Einschmelzmuttern M3 (Länge ca. 4–5,7 mm) | ~50 | Gehäuse, Deckel, Relais-Modul, Netzteil, MOSFET-Modul |
+| Einschmelzmuttern M2.5 (Länge ca. 4 mm) | ~10 | Raspberry Pi (Bohrungen 2,7 mm), ADS1115 |
+| Zylinderschrauben M3, DIN 912, Edelstahl A2, 6/8/10/12/16 mm | Sortiment | |
+| Zylinderschrauben M2.5, DIN 912, Edelstahl A2, 6/8 mm | Sortiment | |
+| Kleinmaterial | | Litze, Aderendhülsen, Schrumpfschlauch, Kabelbinder |
 
 ## Hinweise
 - Heizung (500–1000 W) und Relais (10 A) sind mit dem Elektrotechniker abgestimmt. LED-Lampen haben einen hohen Einschaltstrom; das bei der Lampe berücksichtigen.
