@@ -6,8 +6,8 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 
 ## Aktueller Stand
 
-- **Phase:** 4–6 umgesetzt und lokal mit Simulation getestet; noch nicht als Release deployt.
-- **Nächster Schritt:** Release `v0.2.0` taggen (Freigabe durch den Benutzer, deployt auf weed.autismclan.de). Parallel: Pi einrichten (3.5), Teile bestellen (1.5), danach 4.3 auf echter Hardware testen.
+- **Phase:** 4–6 umgesetzt, Release `v0.2.0` veröffentlicht (ECS über Watchtower).
+- **Nächster Schritt:** ECS-Stack in Portainer neu deployen (neue Compose-Variablen), Pi einrichten (3.5), Teile bestellen (1.5), danach 4.3 auf echter Hardware testen.
 - **Zuletzt aktualisiert:** 2026-10-31
 
 ## Offene Punkte
@@ -50,7 +50,7 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [ ] 3.5 Hello-World-Stacks auf Pi und ECS deployen und den Update-Weg über Watchtower testen
   - [x] ECS: Stack `autoweed` läuft (Port 8097, InfluxDB ok, ntfy erreichbar, Watchtower nur auf AutoWeed-Container)
   - [ ] Pi einrichten und Stack deployen, `BOARD_URL` im ECS-Stack auf die echte IP setzen
-  - [ ] Update über Watchtower beim nächsten Release beobachten
+  - [x] Update über Watchtower beobachtet (v0.2.0)
 
 ## Phase 4: Board-Software
 - [x] 4.1 Konfigurationsschema in `shared` (Temperatur, Bodenfeuchte, Pumpenlimits, Lichtmodi/Profile, Messintervall)
