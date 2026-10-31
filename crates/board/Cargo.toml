@@ -7,7 +7,7 @@ repository.workspace = true
 
 [dependencies]
 anyhow = "1.0.104"
-autoweed-shared = { version = "0.1.0", path = "../shared" }
+autoweed-shared = { path = "../shared" }
 axum = "0.8.9"
 chrono = { version = "0.4.45", default-features = false, features = ["serde", "clock"] }
 rppal = "0.22.1"
