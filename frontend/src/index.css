@@ -183,7 +183,7 @@ table.data th { color: var(--text-2); font-weight: 600; }
 .events li { display: flex; gap: 0.75rem; padding: 0.4rem 0; border-bottom: 1px solid var(--grid); }
 .events time { color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 0.85rem; }
 
-.phases .phase { display: grid; gap: 0.5rem; grid-template-columns: 1fr auto auto auto; align-items: end; }
+.phases .phase { display: grid; gap: 0.5rem; grid-template-columns: minmax(8rem, 1fr) 10rem 13rem 10rem; align-items: end; }
 @media (max-width: 40rem) {
   .phases .phase { grid-template-columns: 1fr 1fr; }
 }

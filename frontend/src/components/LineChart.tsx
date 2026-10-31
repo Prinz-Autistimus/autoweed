@@ -51,6 +51,7 @@ export default function LineChart({
   domain,
   digits = 1,
   step = false,
+  range,
 }: {
   title: string
   unit: string
@@ -65,6 +66,8 @@ export default function LineChart({
   digits?: number
   /** Treppenstufen statt Linie (für Anteile wie „Heizung an“). */
   step?: boolean
+  /** Angezeigter Zeitraum (ms); die Daten können ihn nur teilweise füllen. */
+  range: [number, number]
 }) {
   const [ref, width] = useWidth<HTMLDivElement>()
   const { times, values } = series
@@ -80,7 +83,7 @@ export default function LineChart({
     )
   }
 
-  const [t0, t1] = [times[0], times[times.length - 1] || times[0] + 1]
+  const [t0, t1] = range
   let [y0, y1] = domain ?? [Math.min(...present, target ?? Infinity), Math.max(...present, target ?? -Infinity)]
   if (!domain) {
     const pad = (y1 - y0) * 0.1 || 1

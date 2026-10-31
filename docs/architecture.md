@@ -47,12 +47,26 @@ Alle Endpunkte erwarten `Authorization: Bearer <token>`. Der Token wird als Umge
 | `GET` | `/api/v1/measurements?since=<cursor>` | Alle gepufferten Messwerte und Ereignisse seit `cursor` sowie den nächsten Cursor. Mit dem nächsten Abruf bestätigt ECS den Empfang, danach verwirft das Board die abgeholten Einträge. |
 | `GET` | `/api/v1/config` | Konfiguration, die das Board gerade verwendet |
 | `PUT` | `/api/v1/config` | Neue Konfiguration (komplett, versioniert). Das Board prüft sie und speichert sie lokal. |
-| `POST` | `/api/v1/override/pump` | `{"seconds": n}`: einmal gießen. `n` ist durch das konfigurierte Maximum begrenzt. |
-| `POST` | `/api/v1/override/{heater,light}` | `{"on": bool, "minutes": n}`: manuell übersteuern. Nach Ablauf übernimmt wieder die Regelung. |
+| `POST` | `/api/v1/override/pump` | `{"secs": n}`: einmal gießen, höchstens 120 s. |
+| `POST` | `/api/v1/override/{heater,light}` | `{"on": bool, "minutes": n}`: manuell übersteuern, `minutes: 0` beendet die Übersteuerung. Nach Ablauf übernimmt wieder die Regelung. |
+| `POST` | `/api/v1/pump/unlock` | Sperre „Eimer leer“ aufheben |
 
 Manuelle Befehle haben **immer eine Laufzeit**, ein dauerhaftes „an“ gibt es nicht. So bleibt kein Aktor hängen, wenn die Verbindung abbricht.
 
 Die API-Typen liegen in einem gemeinsamen Crate (`shared`). Daraus werden mit `ts-rs` auch die TypeScript-Typen für das Frontend erzeugt.
+
+## Pinbelegung (Vorschlag, BCM)
+
+| Funktion | GPIO | Pin |
+|---|---|---|
+| I²C SDA (SHT40, ADS1115) | 2 | 3 |
+| I²C SCL | 3 | 5 |
+| 3,3 V (Sensoren, Relais-VCC) | – | 1 / 17 |
+| Relais Heizung | 17 | 11 |
+| Relais Lampe | 27 | 13 |
+| MOSFET Pumpe | 22 | 15 |
+
+Die Ausgänge sind über `HEATER_PIN`, `LIGHT_PIN` und `PUMP_PIN` im Pi-Stack änderbar.
 
 ## Regellogik
 

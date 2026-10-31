@@ -19,6 +19,8 @@ services:
       - INFLUX_ORG=autoweed
       - INFLUX_BUCKET=autoweed
       - INFLUX_TOKEN=${INFLUX_TOKEN:?INFLUX_TOKEN fehlt}
+      - PUBLIC_URL=${PUBLIC_URL:-}               # Link in ntfy-Nachrichten
+      - POLL_INTERVAL_SECS=${POLL_INTERVAL_SECS:-10}
       - RUST_LOG=${RUST_LOG:-info}
     extra_hosts:
       - host.docker.internal:host-gateway     # erreicht ntfy über dessen Host-Port

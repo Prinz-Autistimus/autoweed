@@ -6,8 +6,8 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 
 ## Aktueller Stand
 
-- **Phase:** 4 (parallel: Pi-Einrichtung 3.5 und Teilebestellung 1.5 durch den Benutzer).
-- **Nächster Schritt:** 4.2 Hardware-Abstraktion mit Simulation.
+- **Phase:** 4–6 umgesetzt und lokal mit Simulation getestet; noch nicht als Release deployt.
+- **Nächster Schritt:** Release `v0.2.0` taggen (Freigabe durch den Benutzer, deployt auf weed.autismclan.de). Parallel: Pi einrichten (3.5), Teile bestellen (1.5), danach 4.3 auf echter Hardware testen.
 - **Zuletzt aktualisiert:** 2026-10-31
 
 ## Offene Punkte
@@ -15,8 +15,7 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 | Punkt | Benötigt in |
 |---|---|
 | Leistung der Grow-Lampe (mit Elektrotechniker) | Phase 7 |
-| Domain/Subdomain für die WebUI (z. B. `autoweed.familie-nacken.de`) | Phase 8 |
-| GPIO-Belegung | Phase 4 / 7 |
+| GPIO-Belegung (Vorschlag in architecture.md, final bei 7.1) | Phase 7 |
 
 ---
 
@@ -55,33 +54,33 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 
 ## Phase 4: Board-Software
 - [x] 4.1 Konfigurationsschema in `shared` (Temperatur, Bodenfeuchte, Pumpenlimits, Lichtmodi/Profile, Messintervall)
-- [ ] 4.2 Hardware-Abstraktion (Trait) mit **Simulations-Implementierung**, damit sich ohne Pi entwickeln lässt
-- [ ] 4.3 Treiber: SHT31/SHT40, ADS1115 + Bodensensor, Relais, MOSFET (rppal)
-- [ ] 4.4 Sensor-Back-off (1 → 2 → 5 → 10 → 30 → 60 s), Fehlerstatus
-- [ ] 4.5 Regelung Heizung (Hysterese)
-- [ ] 4.6 Regelung Licht (aus der Uhrzeit berechnet, Autoflower/Profile, Wechsel manuell oder nach X Tagen)
-- [ ] 4.7 Regelung Pumpe (Hysterese, Laufzeit, Mindestabstand, Tageslimit) und Erkennung „Eimer leer“
-- [ ] 4.8 Konfiguration lokal speichern, Start mit allen Aktoren aus, SIGTERM schaltet die Pumpe aus
-- [ ] 4.9 Messwert- und Ereignispuffer mit Cursor
-- [ ] 4.10 HTTP-API mit Bearer-Token (`status`, `measurements`, `config`, `override`)
-- [ ] 4.11 Fehler bei fehlendem Zeit-Sync (Licht bleibt aus, bis die Uhrzeit synchron ist)
+- [x] 4.2 Hardware-Abstraktion (Trait) mit **Simulations-Implementierung**, damit sich ohne Pi entwickeln lässt
+- [ ] 4.3 Treiber: SHT31/SHT40, ADS1115 + Bodensensor, Relais, MOSFET (rppal) — geschrieben, **auf echter Hardware noch ungetestet**
+- [x] 4.4 Sensor-Back-off (1 → 2 → 5 → 10 → 30 → 60 s), Fehlerstatus
+- [x] 4.5 Regelung Heizung (Hysterese)
+- [x] 4.6 Regelung Licht (aus der Uhrzeit berechnet, Autoflower/Profile, Wechsel manuell oder nach X Tagen)
+- [x] 4.7 Regelung Pumpe (Hysterese, Laufzeit, Mindestabstand, Tageslimit) und Erkennung „Eimer leer“
+- [x] 4.8 Konfiguration lokal speichern, Start mit allen Aktoren aus, SIGTERM schaltet die Pumpe aus
+- [x] 4.9 Messwert- und Ereignispuffer mit Cursor
+- [x] 4.10 HTTP-API mit Bearer-Token (`status`, `measurements`, `config`, `override`)
+- [x] 4.11 Fehler bei fehlendem Zeit-Sync (Licht bleibt aus, bis die Uhrzeit synchron ist)
 
 ## Phase 5: ECS-Backend
-- [ ] 5.1 Konfiguration speichern (Volume), versionieren, Export/Import
-- [ ] 5.2 Konfiguration an das Board senden, auch nach dessen Neustart
-- [ ] 5.3 Polling-Job: Messwerte und Ereignisse abholen → InfluxDB
-- [ ] 5.4 ntfy: Sensorfehler (ab 10 s), „Board nicht erreichbar“, „Eimer leer?“, fehlender Zeit-Sync
-- [ ] 5.5 Login mit Passwort (Session)
-- [ ] 5.6 REST-API für das Frontend, Frontend ausliefern
+- [x] 5.1 Konfiguration speichern (Volume), versionieren, Export/Import
+- [x] 5.2 Konfiguration an das Board senden, auch nach dessen Neustart
+- [x] 5.3 Polling-Job: Messwerte und Ereignisse abholen → InfluxDB
+- [x] 5.4 ntfy: Sensorfehler (ab 10 s), „Board nicht erreichbar“, „Eimer leer?“, fehlender Zeit-Sync
+- [x] 5.5 Login mit Passwort (Session)
+- [x] 5.6 REST-API für das Frontend, Frontend ausliefern
 
 ## Phase 6: Frontend
-- [ ] 6.1 Login
-- [ ] 6.2 Dashboard: aktuelle Werte, Aktor-Zustände, Fehler
-- [ ] 6.3 Konfiguration: Temperatur, Bodenfeuchte, Pumpe, Licht (Modus, Profile)
-- [ ] 6.4 Diagramme über einen wählbaren Zeitraum und eine Ereignisliste
-- [ ] 6.5 Manuelle Übersteuerung (Pumpe einmal gießen, Licht/Heizung für X Minuten)
-- [ ] 6.6 Konfiguration exportieren/importieren
-- [ ] 6.7 Mobile Ansicht
+- [x] 6.1 Login
+- [x] 6.2 Dashboard: aktuelle Werte, Aktor-Zustände, Fehler
+- [x] 6.3 Konfiguration: Temperatur, Bodenfeuchte, Pumpe, Licht (Modus, Profile)
+- [x] 6.4 Diagramme über einen wählbaren Zeitraum und eine Ereignisliste
+- [x] 6.5 Manuelle Übersteuerung (Pumpe einmal gießen, Licht/Heizung für X Minuten)
+- [x] 6.6 Konfiguration exportieren/importieren
+- [ ] 6.7 Mobile Ansicht — Layout responsiv gebaut, auf dem Handy noch nicht geprüft
 
 ## Phase 7: Hardware
 - [ ] 7.1 Schaltplan und GPIO-Belegung
@@ -94,7 +93,7 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [ ] 8.1 Bodensensor kalibrieren (trocken/nass)
 - [ ] 8.2 Probelauf ohne Pflanze (mehrere Tage)
 - [ ] 8.3 Fail-Safe-Tests nach der Matrix: Sensor abziehen, Container killen, LAN trennen, ECS stoppen, Strom weg
-- [ ] 8.4 Proxy-Host im NPM, ntfy-Topic (zufälliger Name) in der App abonnieren
+- [ ] 8.4 Proxy-Host im NPM (erledigt: weed.autismclan.de), ntfy-Topic (zufälliger Name) in der App abonnieren
 - [ ] 8.5 Erster Grow 🌱
 
 ## Später

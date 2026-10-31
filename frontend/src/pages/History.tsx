@@ -31,6 +31,7 @@ const percent = (v: number | null) => (v === null ? null : v * 100)
 export default function History() {
   const [range, setRange] = useState<RangeKey>('24h')
   const [data, setData] = useState<HistoryData | null>(null)
+  const [shownRange, setShownRange] = useState<[number, number]>([0, 1])
   const [events, setEvents] = useState<Event[]>([])
   const [config, setConfig] = useState<BoardConfig | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -49,6 +50,7 @@ export default function History() {
     Promise.all([api<HistoryData>(`/api/history?${query}`), api<Event[]>(`/api/events?${query}`)])
       .then(([history, events]) => {
         setData(history)
+        setShownRange([start.getTime(), end.getTime()])
         setEvents(events)
         setHover(null)
         setError(null)
@@ -69,7 +71,7 @@ export default function History() {
     [points],
   )
 
-  const common = { hover, onHover: setHover }
+  const common = { hover, onHover: setHover, range: shownRange }
 
   return (
     <>

@@ -12,9 +12,11 @@ use std::time::Duration;
 
 use anyhow::{Context, Result, bail};
 use autoweed_shared::{BoardConfig, BoardStatus};
+use axum::http::{HeaderValue, header};
 use chrono::{DateTime, Utc};
 use tokio::sync::Notify;
 use tower_http::services::{ServeDir, ServeFile};
+use tower_http::set_header::SetResponseHeaderLayer;
 
 /// Was ECS zuletzt vom Board weiß.
 #[derive(Default)]
@@ -132,6 +134,14 @@ async fn main() -> Result<()> {
     let static_dir = env_or("STATIC_DIR", "frontend/dist");
     let frontend = ServeDir::new(&static_dir)
         .not_found_service(ServeFile::new(format!("{static_dir}/index.html")));
+    // Der Browser fragt jedes Mal nach, ob sich etwas geändert hat (ETag),
+    // damit nach einem Update sofort die neue WebUI geladen wird.
+    let frontend = tower::ServiceBuilder::new()
+        .layer(SetResponseHeaderLayer::if_not_present(
+            header::CACHE_CONTROL,
+            HeaderValue::from_static("no-cache"),
+        ))
+        .service(frontend);
     let app = routes::router(state.clone())
         .fallback_service(frontend)
         .with_state(state);

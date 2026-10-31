@@ -24,8 +24,8 @@
 | Netzteil 230 V → **5 V + 12 V** | 1 | **Variante offen**, siehe Hinweise. 5 V ≥ 3 A (Pi 3 braucht 2,5 A, Reserve für die Kamera); 12 V passend zum Pumpenstrom |
 | Relais-Modul 2-Kanal, 5-V-Spulen, 10 A / 250 VAC, mit Optokoppler und **JD-VCC-Jumper** | 1 | Heizung + Lampe; VCC an 3,3 V vom Pi, JD-VCC an 5 V, siehe Hinweise |
 | MOSFET-Modul, Logic-Level (z. B. D4184 / AOD4184) | 1 | Pumpe 12 V; **kein IRF520** (schaltet bei 3,3 V nicht richtig durch) |
-| Temperatur-/Feuchtesensor SHT31 oder SHT40 (I²C-Breakout) | 1 | hängt oben im Zelt |
-| Kapazitiver Bodenfeuchtesensor (v1.2, analog) | 1 | 3,3 V versorgen, damit das Signal im ADC-Bereich bleibt |
+| SHT40-Sonde (Edelstahl, I²C, 4 Adern, ca. 1 m Kabel) | 1 | hängt oben im Zelt; an 3,3 V vom Pi, **nicht an 5 V**; Adresse 0x44 |
+| Kapazitiver Bodenfeuchtesensor (v1.2, analog) | 1 | 3,3 V versorgen; auf **TLC555** achten (NE555-Varianten laufen an 3,3 V oft nicht). Keine resistiven Sensoren (Korrosion, Dünger verfälscht den Wert) |
 | ADS1115 (ADC, I²C) | 1 | im Controllergehäuse; der Pi hat keine Analogeingänge |
 | Schuko-Einbausteckdose | 2 | Heizung, Lampe |
 | Kaltgeräte-Einbaubuchse C14 mit Sicherung + Schalter | 1 | 230-V-Eingang |

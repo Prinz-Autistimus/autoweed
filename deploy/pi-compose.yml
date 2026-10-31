@@ -9,14 +9,20 @@ services:
     ports:
       - "8080:8080"
     devices:
-      # Erst nach "I²C aktivieren" vorhanden, siehe README.md
-      - /dev/gpiochip0:/dev/gpiochip0
-      - /dev/i2c-1:/dev/i2c-1
+      - /dev/gpiomem:/dev/gpiomem             # Relais und Pumpe
+      - /dev/i2c-1:/dev/i2c-1                 # Sensoren; erst nach "I²C aktivieren" vorhanden, siehe README.md
     environment:
       - BOARD_TOKEN=${BOARD_TOKEN:?BOARD_TOKEN fehlt}
+      - CLIMATE_SENSOR=${CLIMATE_SENSOR:-sht40}     # sht31 oder sht40
+      - HEATER_PIN=${HEATER_PIN:-17}                # BCM-Nummern
+      - LIGHT_PIN=${LIGHT_PIN:-27}
+      - PUMP_PIN=${PUMP_PIN:-22}
+      - RELAY_ACTIVE_LOW=${RELAY_ACTIVE_LOW:-true}
       - RUST_LOG=${RUST_LOG:-info}
     volumes:
-      - board-data:/data                      # lokale Kopie der Konfiguration
+      - board-data:/data                      # lokale Kopie der Konfiguration, Pumpenzähler
+      # systemd-timesyncd legt hier "synchronized" an, sobald die Uhr stimmt
+      - /run/systemd/timesync:/run/systemd/timesync:ro
     stop_grace_period: 10s                    # Zeit zum Abschalten der Pumpe bei SIGTERM
     labels:
       - com.centurylinklabs.watchtower.enable=true

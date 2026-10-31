@@ -24,7 +24,8 @@ Beide Stacks werden aus dem Portainer auf ECS verwaltet. Auf dem Pi läuft dafü
    ```bash
    sudo raspi-config nonint do_i2c 0
    sudo reboot
-   ls /dev/i2c-1 /dev/gpiochip0    # beide müssen existieren
+   ls /dev/i2c-1 /dev/gpiomem      # beide müssen existieren
+   ls /run/systemd/timesync/synchronized   # Uhr synchron (sonst bleibt das Licht aus)
    ```
 5. **Hardware-Watchdog** einschalten. Bleibt der Kernel hängen, startet der Pi nach 15 s neu (15 s ist das Maximum beim Pi):
    ```bash
@@ -69,17 +70,32 @@ Die Werte für die Variablen erzeugt man mit `openssl rand -hex 32`. `BOARD_TOKE
 - Repository URL: `https://github.com/Prinz-Autistimus/autoweed`
 - Repository reference: `refs/heads/main`
 - Compose path: `deploy/pi-compose.yml`
-- Environment variables: `BOARD_TOKEN` (optional `AUTOWEED_TAG`, `WATCHTOWER_INTERVAL`)
+- Environment variables: `BOARD_TOKEN` (optional `CLIMATE_SENSOR`, `HEATER_PIN`, `LIGHT_PIN`, `PUMP_PIN`, `RELAY_ACTIVE_LOW`, `AUTOWEED_TAG`, `WATCHTOWER_INTERVAL`)
 
 ### ECS (Umgebung `local`)
 
 *Stacks → Add stack → Repository*, wie oben, aber:
 - Compose path: `deploy/host-compose.yml`
-- Environment variables: `BOARD_TOKEN`, `BOARD_URL`, `WEBUI_PASSWORD`, `NTFY_TOPIC`, `INFLUX_PASSWORD`, `INFLUX_TOKEN` (optional `AUTOWEED_PORT`, `NTFY_URL`, `AUTOWEED_TAG`)
+- Environment variables: `BOARD_TOKEN`, `BOARD_URL`, `WEBUI_PASSWORD`, `NTFY_TOPIC`, `INFLUX_PASSWORD`, `INFLUX_TOKEN` (optional `PUBLIC_URL`, `AUTOWEED_PORT`, `NTFY_URL`, `POLL_INTERVAL_SECS`, `AUTOWEED_TAG`). `WEBUI_PASSWORD` braucht mindestens 8 Zeichen.
 
 Die WebUI ist dann unter `http://192.168.178.47:8097` erreichbar. Für den Zugriff von außen wird im Nginx Proxy Manager ein Proxy Host auf diesen Port angelegt.
 
-## 4. Updates
+## 4. Lokal entwickeln (ohne Pi)
+
+```bash
+# Board als Simulation (SIM_SPEED beschleunigt die Zeit, SIM_FAIL_RATE lässt Messungen fehlschlagen)
+HARDWARE=sim SIM_SPEED=30 TIME_SYNC_FILE= BOARD_TOKEN=devtoken-1234567890 DATA_DIR=/tmp/aw-board \
+  BIND_ADDR=127.0.0.1:8080 cargo run -p autoweed-board
+
+# ECS gegen das simulierte Board (braucht eine InfluxDB 2 auf :8086)
+WEBUI_PASSWORD=devpasswort BOARD_URL=http://127.0.0.1:8080 BOARD_TOKEN=devtoken-1234567890 \
+  INFLUX_URL=http://127.0.0.1:8086 INFLUX_TOKEN=... NTFY_URL=http://127.0.0.1:9999 NTFY_TOPIC=test \
+  DATA_DIR=/tmp/aw-ecs BIND_ADDR=127.0.0.1:3000 cargo run -p autoweed-ecs
+
+cd frontend && npm run dev     # oder npm run build, dann liefert ECS die WebUI aus
+```
+
+## 5. Updates
 
 ```
 git tag v0.2.0 && git push --tags
