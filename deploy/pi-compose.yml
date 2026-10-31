@@ -1,0 +1,33 @@
+# Stack für den Raspberry Pi (Board). In Portainer: Umgebung "Pi" → Stacks → Add stack.
+# Variablen: siehe .env.example
+
+services:
+  board:
+    image: ghcr.io/prinz-autistimus/autoweed-board:${AUTOWEED_TAG:-latest}
+    container_name: autoweed-board
+    restart: always
+    ports:
+      - "8080:8080"
+    devices:
+      # Erst nach "I²C aktivieren" vorhanden, siehe README.md
+      - /dev/gpiochip0:/dev/gpiochip0
+      - /dev/i2c-1:/dev/i2c-1
+    environment:
+      - BOARD_TOKEN=${BOARD_TOKEN:?BOARD_TOKEN fehlt}
+      - RUST_LOG=${RUST_LOG:-info}
+    volumes:
+      - board-data:/data                      # lokale Kopie der Konfiguration
+    stop_grace_period: 10s                    # Zeit zum Abschalten der Pumpe bei SIGTERM
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+  watchtower:
+    image: nickfedor/watchtower:latest        # gepflegter Fork, containrrr/watchtower ist archiviert
+    container_name: autoweed-watchtower
+    restart: unless-stopped
+    command: --label-enable --cleanup --interval ${WATCHTOWER_INTERVAL:-300}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  board-data:

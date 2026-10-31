@@ -10,7 +10,7 @@
 │   - Polling-Job ──────────────────────┘                                  │
 └───────────────┬──────────────────────────────────────────────────────────┘
                 │ HTTP + Bearer-Token (LAN über Devolo)
-┌───────────────▼────────── Board (Raspberry Pi 4, Docker) ────────────────┐
+┌───────────────▼────────── Board (Raspberry Pi 3, Docker) ────────────────┐
 │  autoweed-board (Rust/axum + rppal)                                      │
 │   - Regelschleife (Heizung, Pumpe, Licht) mit letzter Konfiguration      │
 │   - Messwert-/Ereignis-Puffer                                            │
@@ -85,10 +85,12 @@ Beim Start sind alle Aktoren aus, bis der erste Regeldurchlauf ihren Zustand fes
 
 | Image | Plattform | Läuft auf | Zugriff auf Geräte |
 |---|---|---|---|
-| `ghcr.io/<user>/autoweed-board` | linux/arm64 | Pi 4 (Raspberry Pi OS 64-bit) | `/dev/gpiochip0`, `/dev/i2c-1` |
-| `ghcr.io/<user>/autoweed-ecs` | linux/amd64 | ECS | – |
+| `ghcr.io/prinz-autistimus/autoweed-board` | linux/arm64 | Pi 3 (Raspberry Pi OS 64-bit) | `/dev/gpiochip0`, `/dev/i2c-1` |
+| `ghcr.io/prinz-autistimus/autoweed-ecs` | linux/amd64 | ECS | – |
 
-- Gebaut wird in GitHub Actions per Cross-Compiling, der Entwickler-Laptop muss nichts bauen.
+- Gebaut wird in GitHub Actions: das Board-Image nativ auf einem arm64-Runner (`ubuntu-24.04-arm`), das ECS-Image auf amd64. Der Entwickler-Laptop muss nichts bauen.
+- Image-Tags: Push auf `main` → `:edge`; Git-Tag `v1.2.3` → `:1.2.3`, `:1.2`, `:latest` und ein GitHub-Release. Die Stacks verwenden standardmäßig `:latest`.
+- Host-Port der WebUI auf ECS: **8097** (3000 ist belegt).
 - Konfiguration und InfluxDB-Daten liegen in Docker-Volumes auf ECS.
 
 ### Compose-Dateien

@@ -1,0 +1,58 @@
+# Stack für ECS (WebUI, Konfiguration, Historie). In Portainer: Umgebung "local" → Stacks → Add stack.
+# ntfy ist nicht Teil des Stacks, es wird die bestehende Instanz auf ECS genutzt.
+# Variablen: siehe .env.example
+
+services:
+  ecs:
+    image: ghcr.io/prinz-autistimus/autoweed-ecs:${AUTOWEED_TAG:-latest}
+    container_name: autoweed-ecs
+    restart: unless-stopped
+    ports:
+      - "${AUTOWEED_PORT:-8097}:3000"          # NPM routet auf diesen Host-Port
+    environment:
+      - BOARD_URL=${BOARD_URL:?BOARD_URL fehlt}
+      - BOARD_TOKEN=${BOARD_TOKEN:?BOARD_TOKEN fehlt}
+      - WEBUI_PASSWORD=${WEBUI_PASSWORD:?WEBUI_PASSWORD fehlt}
+      - NTFY_URL=${NTFY_URL:-http://host.docker.internal:8090}
+      - NTFY_TOPIC=${NTFY_TOPIC:?NTFY_TOPIC fehlt}
+      - INFLUX_URL=http://influxdb:8086
+      - INFLUX_ORG=autoweed
+      - INFLUX_BUCKET=autoweed
+      - INFLUX_TOKEN=${INFLUX_TOKEN:?INFLUX_TOKEN fehlt}
+      - RUST_LOG=${RUST_LOG:-info}
+    extra_hosts:
+      - host.docker.internal:host-gateway     # erreicht ntfy über dessen Host-Port
+    volumes:
+      - ecs-data:/data                         # Konfiguration (exportierbar über die WebUI)
+    depends_on:
+      - influxdb
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+  influxdb:
+    image: influxdb:2.8
+    container_name: autoweed-influxdb
+    restart: unless-stopped
+    environment:
+      # Nur beim allerersten Start ausgewertet (leeres Volume)
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=autoweed
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUX_PASSWORD:?INFLUX_PASSWORD fehlt}
+      - DOCKER_INFLUXDB_INIT_ORG=autoweed
+      - DOCKER_INFLUXDB_INIT_BUCKET=autoweed
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN:?INFLUX_TOKEN fehlt}
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+
+  watchtower:
+    image: nickfedor/watchtower:latest        # gepflegter Fork, containrrr/watchtower ist archiviert
+    container_name: autoweed-watchtower
+    restart: unless-stopped
+    # Aktualisiert nur Container mit dem Label oben, andere Stacks auf ECS bleiben unberührt.
+    command: --label-enable --cleanup --interval ${WATCHTOWER_INTERVAL:-300}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  ecs-data:
+  influxdb-data:

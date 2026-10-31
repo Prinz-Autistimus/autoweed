@@ -8,7 +8,7 @@ Hierfür ist dieses Projekt gedacht. Es ist ein Open-Source-Projekt (AGPL-3.0), 
 Ausgelegt ist das System für **eine Pflanze** in **einem Grow-Zelt** (bis 1,8 m Höhe). Das Zelt steht in einer kühlen Garage.
 
 ## Legende
-- **Board-Computer / Board:** Raspberry Pi 4 am Zelt. Liest die Sensoren, schaltet die Aktoren und regelt selbstständig.
+- **Board-Computer / Board:** Raspberry Pi 3 (vorhanden) am Zelt. Liest die Sensoren, schaltet die Aktoren und regelt selbstständig.
 - **ECS:** Der Home-Server (OpenMediaVault + Docker). Hier laufen WebUI, Konfiguration, Datenbank und Benachrichtigungen.
 - **(Sub-)Modul:** Sensoren und Aktoren, per Kabel mit dem Board verbunden.
 

@@ -6,8 +6,8 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 
 ## Aktueller Stand
 
-- **Phase:** 1 (Software-Gerüst fertig, Teilebestellung offen).
-- **Nächster Schritt:** Phase 2: CI/CD (2.1). Parallel bestellt der Benutzer die Teile (1.5).
+- **Phase:** 3 (Compose-Dateien und Anleitung fertig; Teilebestellung 1.5 offen).
+- **Nächster Schritt:** 2.4 mit dem Tag `v0.1.0` testen, danach 3.5: Pi nach `deploy/README.md` einrichten (macht der Benutzer) und die Stacks deployen.
 - **Zuletzt aktualisiert:** 2026-10-31
 
 ## Offene Punkte
@@ -38,16 +38,16 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [ ] 1.5 **Teile bestellen**: AliExpress braucht Wochen, deshalb parallel zur Software
 
 ## Phase 2: CI/CD
-- [ ] 2.1 GitHub Actions: `cargo check`/`clippy`, Frontend-Build
-- [ ] 2.2 Docker-Image `autoweed-board` (linux/arm64, Cross-Compiling) → GHCR
-- [ ] 2.3 Docker-Image `autoweed-ecs` (linux/amd64, mit Frontend) → GHCR
+- [x] 2.1 GitHub Actions: `cargo check`/`clippy`, Frontend-Build
+- [x] 2.2 Docker-Image `autoweed-board` (linux/arm64, nativer arm64-Runner) → GHCR
+- [x] 2.3 Docker-Image `autoweed-ecs` (linux/amd64, mit Frontend) → GHCR
 - [ ] 2.4 Releases über Git-Tags (`v*`), Images mit Version + `latest` taggen
 
 ## Phase 3: Deployment-Gerüst
-- [ ] 3.1 `deploy/pi-compose.yml` (Board, Watchtower)
-- [ ] 3.2 `deploy/host-compose.yml` (ECS, InfluxDB, Watchtower; ntfy extern)
-- [ ] 3.3 `deploy/.env.example`
-- [ ] 3.4 `deploy/README.md`: Pi OS 64-bit Lite, Docker, I²C aktivieren, Hardware-Watchdog, Portainer Agent, Einbindung in den ECS-Portainer
+- [x] 3.1 `deploy/pi-compose.yml` (Board, Watchtower)
+- [x] 3.2 `deploy/host-compose.yml` (ECS, InfluxDB, Watchtower; ntfy extern)
+- [x] 3.3 `deploy/.env.example`
+- [x] 3.4 `deploy/README.md`: Pi OS 64-bit Lite (Pi 3), Docker, I²C aktivieren, Hardware-Watchdog, Portainer Agent, Einbindung in den ECS-Portainer
 - [ ] 3.5 Hello-World-Stacks auf Pi und ECS deployen und den Update-Weg über Watchtower testen
 
 ## Phase 4: Board-Software

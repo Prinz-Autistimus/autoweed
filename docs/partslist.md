@@ -11,6 +11,7 @@
 | Töpfe | |
 | Wasserpumpe | 12 V Tauchpumpe, generisch |
 | Eimer | für Wasser-Dünger-Lösung |
+| Raspberry Pi 3 | mit WLAN + Bluetooth; Board-Computer |
 | Devolo-Adapter | LAN in die Garage |
 | 3D-Drucker | Ender 3 Pro mit OctoPrint |
 
@@ -18,9 +19,9 @@
 
 | Teil | Menge | Bemerkung |
 |---|---|---|
-| Raspberry Pi 4 (2 GB) | 1 | |
 | microSD 32 GB, „High Endurance“ | 1 | hält Dauerschreiben besser aus |
-| Netzteil 230 V → 3,3/5/12/24 V, Schraubklemmen | 1 | **5-V-Ausgang ≥ 3 A** (Pi 4, mit späterer Kamera besser 4 A) |
+| Micro-USB-Kabel mit offenen Enden (Pigtail) | 1 | Pi vom 5-V-Ausgang des Netzteils versorgen; nicht über die GPIO-Pins, sonst fehlt die Schutzschaltung des Pi |
+| Netzteil 230 V → 3,3/5/12/24 V, Schraubklemmen | 1 | **5-V-Ausgang ≥ 3 A** (Pi 3 braucht 2,5 A, Reserve für die spätere USB-Kamera) |
 | Relais-Modul 2-Kanal, 10 A / 250 VAC, mit Optokoppler | 1 | Heizung + Lampe; muss mit 3,3-V-Logik schalten |
 | MOSFET-Modul, Logic-Level (z. B. D4184 / AOD4184) | 1 | Pumpe 12 V; **kein IRF520** (schaltet bei 3,3 V nicht richtig durch) |
 | Temperatur-/Feuchtesensor SHT31 oder SHT40 (I²C-Breakout) | 1 | hängt oben im Zelt |

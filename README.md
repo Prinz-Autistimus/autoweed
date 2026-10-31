@@ -2,7 +2,7 @@
 
 Automatisierte Steuerung für ein Grow-Zelt: Temperatur, Bodenfeuchtigkeit und Lichtzyklus werden überwacht und geregelt, konfiguriert über eine WebUI.
 
-- **Board** (Raspberry Pi 4): liest die Sensoren, schaltet Heizung, Lampe und Pumpe und regelt eigenständig weiter, auch wenn der Server ausfällt.
+- **Board** (Raspberry Pi 3): liest die Sensoren, schaltet Heizung, Lampe und Pumpe und regelt eigenständig weiter, auch wenn der Server ausfällt.
 - **ECS** (Home-Server): WebUI, Konfiguration, Messdaten-Historie (InfluxDB) und Benachrichtigungen (ntfy).
 
 ## Dokumentation
