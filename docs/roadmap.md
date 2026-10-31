@@ -6,8 +6,8 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 
 ## Aktueller Stand
 
-- **Phase:** 3 (Release `v0.1.0` veröffentlicht; Teilebestellung 1.5 offen).
-- **Nächster Schritt:** 3.5: Pi nach `deploy/README.md` einrichten (macht der Benutzer) und die Stacks deployen.
+- **Phase:** 4 (parallel: Pi-Einrichtung 3.5 und Teilebestellung 1.5 durch den Benutzer).
+- **Nächster Schritt:** 4.2 Hardware-Abstraktion mit Simulation.
 - **Zuletzt aktualisiert:** 2026-10-31
 
 ## Offene Punkte
@@ -49,9 +49,12 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [x] 3.3 `deploy/.env.example`
 - [x] 3.4 `deploy/README.md`: Pi OS 64-bit Lite (Pi 3), Docker, I²C aktivieren, Hardware-Watchdog, Portainer Agent, Einbindung in den ECS-Portainer
 - [ ] 3.5 Hello-World-Stacks auf Pi und ECS deployen und den Update-Weg über Watchtower testen
+  - [x] ECS: Stack `autoweed` läuft (Port 8097, InfluxDB ok, ntfy erreichbar, Watchtower nur auf AutoWeed-Container)
+  - [ ] Pi einrichten und Stack deployen, `BOARD_URL` im ECS-Stack auf die echte IP setzen
+  - [ ] Update über Watchtower beim nächsten Release beobachten
 
 ## Phase 4: Board-Software
-- [ ] 4.1 Konfigurationsschema in `shared` (Temperatur, Bodenfeuchte, Pumpenlimits, Lichtmodi/Profile, Messintervall)
+- [x] 4.1 Konfigurationsschema in `shared` (Temperatur, Bodenfeuchte, Pumpenlimits, Lichtmodi/Profile, Messintervall)
 - [ ] 4.2 Hardware-Abstraktion (Trait) mit **Simulations-Implementierung**, damit sich ohne Pi entwickeln lässt
 - [ ] 4.3 Treiber: SHT31/SHT40, ADS1115 + Bodensensor, Relais, MOSFET (rppal)
 - [ ] 4.4 Sensor-Back-off (1 → 2 → 5 → 10 → 30 → 60 s), Fehlerstatus
