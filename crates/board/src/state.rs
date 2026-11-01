@@ -31,6 +31,30 @@ pub struct Shared {
     pub commands: Vec<Command>,
 }
 
+impl Shared {
+    pub fn new(config: BoardConfig, config_from_ecs: bool, buffer: Buffer) -> Self {
+        Self {
+            config,
+            config_from_ecs,
+            status: BoardStatus {
+                version: env!("CARGO_PKG_VERSION").into(),
+                time: chrono::Utc::now(),
+                time_synced: false,
+                config_version: None,
+                sensors: Default::default(),
+                actuators: Default::default(),
+                overrides: Default::default(),
+                light_phase: None,
+                pump_locked: false,
+                pumped_secs_today: 0,
+                errors: Vec::new(),
+            },
+            buffer,
+            commands: Vec::new(),
+        }
+    }
+}
+
 /// Messwerte und Ereignisse, bis ECS sie abholt.
 pub struct Buffer {
     boot_id: u64,
@@ -116,5 +140,61 @@ impl Storage {
         std::fs::write(&tmp, serde_json::to_vec_pretty(value)?)?;
         std::fs::rename(&tmp, &path)?;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use autoweed_shared::{Event, EventKind};
+
+    fn entry() -> BufferEntry {
+        BufferEntry::Event(Event {
+            at: chrono::Utc::now(),
+            kind: EventKind::PumpUnlocked,
+        })
+    }
+
+    #[test]
+    fn cursor_acknowledges_entries() {
+        let mut buffer = Buffer::new(7);
+        for _ in 0..3 {
+            buffer.push(entry());
+        }
+        let first = buffer.take(0, 0);
+        assert_eq!(
+            (first.entries.len(), first.next_cursor, first.more),
+            (3, 3, false)
+        );
+        // Ohne Bestätigung kommen dieselben Einträge noch einmal.
+        assert_eq!(buffer.take(0, 7).entries.len(), 3);
+        buffer.push(entry());
+        let second = buffer.take(first.next_cursor, 7);
+        assert_eq!((second.entries.len(), second.next_cursor), (1, 4));
+        // Nichts Neues: Cursor bleibt stehen.
+        let empty = buffer.take(second.next_cursor, 7);
+        assert_eq!((empty.entries.len(), empty.next_cursor), (0, 4));
+    }
+
+    #[test]
+    fn foreign_boot_id_starts_from_scratch() {
+        let mut buffer = Buffer::new(7);
+        buffer.push(entry());
+        buffer.push(entry());
+        // Cursor eines früheren Starts darf nichts verwerfen.
+        assert_eq!(buffer.take(2, 6).entries.len(), 2);
+    }
+
+    #[test]
+    fn batches_are_limited() {
+        let mut buffer = Buffer::new(1);
+        for _ in 0..BATCH_LIMIT + 5 {
+            buffer.push(entry());
+        }
+        let first = buffer.take(0, 1);
+        assert_eq!(first.entries.len(), BATCH_LIMIT);
+        assert!(first.more);
+        let rest = buffer.take(first.next_cursor, 1);
+        assert_eq!((rest.entries.len(), rest.more), (5, false));
     }
 }

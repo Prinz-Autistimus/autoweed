@@ -205,6 +205,10 @@ pub struct PumpRequest {
 /// Höchste Laufzeit eines manuellen Gießvorgangs.
 pub const MAX_MANUAL_PUMP_SECS: u32 = 120;
 
+/// Längste manuelle Übersteuerung von Heizung oder Licht (24 h). Längere
+/// Anfragen kürzt das Board, ECS lehnt sie ab.
+pub const MAX_OVERRIDE_MINUTES: u32 = 24 * 60;
+
 // ---------------------------------------------------------------------------
 // ECS-API (für das Frontend)
 // ---------------------------------------------------------------------------

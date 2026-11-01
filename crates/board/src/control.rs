@@ -8,7 +8,8 @@ use std::time::Duration;
 
 use autoweed_shared::{
     Actuator, ActuatorStates, BoardConfig, BoardError, BoardStatus, BufferEntry, ErrorKind, Event,
-    EventKind, MAX_MANUAL_PUMP_SECS, Measurement, Override, Overrides, PumpReason, SensorValues,
+    EventKind, MAX_MANUAL_PUMP_SECS, MAX_OVERRIDE_MINUTES, Measurement, Override, Overrides,
+    PumpReason, SensorValues,
 };
 use chrono::{DateTime, NaiveDate, TimeDelta, Utc};
 use serde::{Deserialize, Serialize};
@@ -258,14 +259,15 @@ impl Controller {
                         self.event(EventKind::OverrideCleared { actuator });
                     }
                 } else {
+                    let minutes = req.minutes.min(MAX_OVERRIDE_MINUTES);
                     *slot = Some(Override {
                         on: req.on,
-                        until: now + TimeDelta::minutes(req.minutes.into()),
+                        until: now + TimeDelta::minutes(minutes.into()),
                     });
                     self.event(EventKind::OverrideSet {
                         actuator,
                         on: req.on,
-                        minutes: req.minutes,
+                        minutes,
                     });
                 }
             }
@@ -287,16 +289,16 @@ impl Controller {
     }
 
     fn expire_overrides(&mut self, now: DateTime<Utc>) {
-        for (actuator, slot) in [
-            (Actuator::Heater, &mut self.overrides.heater),
-            (Actuator::Light, &mut self.overrides.light),
-        ] {
+        for actuator in [Actuator::Heater, Actuator::Light] {
+            let slot = match actuator {
+                Actuator::Heater => &mut self.overrides.heater,
+                _ => &mut self.overrides.light,
+            };
             if slot.as_ref().is_some_and(|o| o.until <= now) {
                 *slot = None;
-                self.events.push(Event {
-                    at: now,
-                    kind: EventKind::OverrideCleared { actuator },
-                });
+                // Eigener Zeitstempel je Ereignis: InfluxDB überschreibt
+                // Ereignisse gleicher Art mit gleichem Zeitstempel.
+                self.event(EventKind::OverrideCleared { actuator });
             }
         }
     }
@@ -374,7 +376,8 @@ impl Controller {
             self.save_pump();
         }
 
-        // Laufenden Gießvorgang beenden; ohne Bodenwert sofort aus.
+        // Laufenden Gießvorgang nach Ablauf beenden. Fällt der Bodensensor
+        // währenddessen aus, läuft die Dosis noch zu Ende (höchstens `pump_secs`).
         if self.pump_until.is_some_and(|until| now >= until) {
             self.pump_until = None;
         }
@@ -498,5 +501,261 @@ impl Controller {
             }
             _ => {}
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::Buffer;
+    use autoweed_shared::OverrideRequest;
+    use chrono::TimeZone;
+
+    /// Sensorwerte, die der Test von außen setzt; `None` = Sensor fällt aus.
+    #[derive(Default)]
+    struct Fake {
+        climate: Option<Climate>,
+        soil_raw: Option<i16>,
+        states: ActuatorStates,
+    }
+
+    struct FakeHardware(Arc<Mutex<Fake>>);
+
+    impl Hardware for FakeHardware {
+        fn read_climate(&mut self) -> anyhow::Result<Climate> {
+            self.0
+                .lock()
+                .unwrap()
+                .climate
+                .ok_or_else(|| anyhow::anyhow!("weg"))
+        }
+        fn read_soil_raw(&mut self) -> anyhow::Result<i16> {
+            self.0
+                .lock()
+                .unwrap()
+                .soil_raw
+                .ok_or_else(|| anyhow::anyhow!("weg"))
+        }
+        fn reinit_climate(&mut self) -> anyhow::Result<()> {
+            Ok(())
+        }
+        fn reinit_soil(&mut self) -> anyhow::Result<()> {
+            Ok(())
+        }
+        fn set(&mut self, actuator: Actuator, on: bool) -> anyhow::Result<()> {
+            let states = &mut self.0.lock().unwrap().states;
+            match actuator {
+                Actuator::Heater => states.heater = on,
+                Actuator::Light => states.light = on,
+                Actuator::Pump => states.pump = on,
+            }
+            Ok(())
+        }
+    }
+
+    struct Setup {
+        controller: Controller,
+        fake: Arc<Mutex<Fake>>,
+        shared: Arc<Mutex<Shared>>,
+        now: DateTime<Utc>,
+    }
+
+    impl Setup {
+        fn new(config: BoardConfig) -> Self {
+            let dir = std::env::temp_dir().join(format!(
+                "autoweed-test-{}-{:?}",
+                std::process::id(),
+                std::thread::current().id()
+            ));
+            let _ = std::fs::remove_dir_all(&dir);
+            let storage = Storage::new(dir).unwrap();
+            let fake = Arc::new(Mutex::new(Fake {
+                climate: Some(climate(24.0)),
+                soil_raw: Some(raw_for(&config, 50.0)),
+                ..Default::default()
+            }));
+            let shared = Arc::new(Mutex::new(Shared::new(config, true, Buffer::new(1))));
+            let controller = Controller::new(
+                Box::new(FakeHardware(fake.clone())),
+                shared.clone(),
+                storage,
+                Box::new(|| true),
+            );
+            Self {
+                controller,
+                fake,
+                shared,
+                now: Utc.with_ymd_and_hms(2026, 11, 1, 12, 0, 0).unwrap(),
+            }
+        }
+
+        /// Lässt die Zeit sekundenweise laufen, wie die echte Schleife.
+        fn run_secs(&mut self, secs: i64) {
+            for _ in 0..secs {
+                self.controller.tick(self.now);
+                self.now += TimeDelta::seconds(1);
+            }
+        }
+
+        fn states(&self) -> ActuatorStates {
+            self.fake.lock().unwrap().states
+        }
+
+        fn set_temperature(&self, t: f32) {
+            self.fake.lock().unwrap().climate = Some(climate(t));
+        }
+
+        fn set_soil(&self, percent: f32) {
+            let raw = raw_for(&self.shared.lock().unwrap().config, percent);
+            self.fake.lock().unwrap().soil_raw = Some(raw);
+        }
+    }
+
+    fn climate(t: f32) -> Climate {
+        Climate {
+            temperature_celsius: t,
+            humidity_percent: 50.0,
+        }
+    }
+
+    fn raw_for(config: &BoardConfig, percent: f32) -> i16 {
+        let c = &config.soil_calibration;
+        let (dry, wet) = (f32::from(c.dry_raw), f32::from(c.wet_raw));
+        (dry - percent / 100.0 * (dry - wet)).round() as i16
+    }
+
+    #[test]
+    fn heater_hysteresis() {
+        // Ziel 24 °C, Hysterese 1 °C
+        let mut s = Setup::new(BoardConfig::default());
+        s.set_temperature(22.9);
+        s.run_secs(6);
+        assert!(s.states().heater);
+        s.set_temperature(24.5);
+        s.run_secs(6);
+        assert!(s.states().heater, "innerhalb der Hysterese bleibt sie an");
+        s.set_temperature(25.1);
+        s.run_secs(6);
+        assert!(!s.states().heater);
+        s.set_temperature(23.5);
+        s.run_secs(6);
+        assert!(!s.states().heater, "innerhalb der Hysterese bleibt sie aus");
+    }
+
+    #[test]
+    fn heater_off_without_temperature() {
+        let mut s = Setup::new(BoardConfig::default());
+        s.set_temperature(10.0);
+        s.run_secs(6);
+        assert!(s.states().heater);
+        s.fake.lock().unwrap().climate = None;
+        s.run_secs(6);
+        assert!(!s.states().heater);
+        let errors = &s.shared.lock().unwrap().status.errors;
+        assert!(errors.iter().any(|e| e.kind == ErrorKind::ClimateSensor));
+    }
+
+    #[test]
+    fn pump_doses_and_respects_interval() {
+        // Ziel 50 %, Hysterese 10 %, 10 s, alle 60 min, 120 s pro Tag
+        let mut s = Setup::new(BoardConfig::default());
+        s.set_soil(35.0);
+        s.run_secs(1);
+        assert!(s.states().pump);
+        s.run_secs(10);
+        assert!(!s.states().pump, "nach pump_secs aus");
+        s.run_secs(30 * 60);
+        assert!(!s.states().pump, "Mindestabstand noch nicht vorbei");
+        // Feuchte ist gestiegen, aber noch zu trocken → zweiter Gießvorgang.
+        s.set_soil(38.0);
+        s.run_secs(31 * 60);
+        assert_eq!(s.controller.pump.pumped_secs_today, 20);
+        assert_eq!(s.controller.pump.ineffective_doses, 0);
+    }
+
+    #[test]
+    fn empty_bucket_locks_pump() {
+        // 3 Gießvorgänge in Folge ohne Anstieg um 2 % → Sperre
+        let mut s = Setup::new(BoardConfig::default());
+        s.set_soil(30.0);
+        s.run_secs(4 * 61 * 60);
+        assert!(s.controller.pump.locked);
+        // Erster Gießvorgang + 3 wirkungslose: der dritte wird nicht mehr ausgeführt.
+        assert_eq!(s.controller.pump.pumped_secs_today, 30);
+        assert!(!s.states().pump);
+        assert!(s.shared.lock().unwrap().status.pump_locked);
+
+        s.shared.lock().unwrap().commands.push(Command::UnlockPump);
+        s.run_secs(1);
+        assert!(!s.controller.pump.locked);
+        let errors = &s.shared.lock().unwrap().status.errors;
+        assert!(!errors.iter().any(|e| e.kind == ErrorKind::BucketEmpty));
+    }
+
+    #[test]
+    fn daily_limit() {
+        let mut config = BoardConfig::default();
+        config.watering.min_interval_mins = 1;
+        config.watering.max_pump_secs_per_day = 25;
+        config.watering.empty_bucket.doses = 100;
+        let mut s = Setup::new(config);
+        s.set_soil(30.0);
+        s.run_secs(30 * 60);
+        assert_eq!(s.controller.pump.pumped_secs_today, 20);
+    }
+
+    #[test]
+    fn no_watering_without_soil_value() {
+        let mut s = Setup::new(BoardConfig::default());
+        s.fake.lock().unwrap().soil_raw = None;
+        s.run_secs(120);
+        assert_eq!(s.controller.pump.pumped_secs_today, 0);
+        assert!(!s.states().pump);
+    }
+
+    #[test]
+    fn overrides_expire_with_distinct_events() {
+        let mut s = Setup::new(BoardConfig::default());
+        for actuator in [Actuator::Heater, Actuator::Light] {
+            s.shared.lock().unwrap().commands.push(Command::Override(
+                actuator,
+                OverrideRequest {
+                    on: true,
+                    minutes: 1,
+                },
+            ));
+        }
+        s.set_temperature(30.0);
+        s.run_secs(2);
+        assert!(s.states().heater, "Übersteuerung schlägt die Regelung");
+        s.run_secs(60);
+        assert!(!s.states().heater);
+        let entries = s.shared.lock().unwrap().buffer.take(0, 1).entries;
+        let cleared: Vec<_> = entries
+            .iter()
+            .filter_map(|e| match e {
+                BufferEntry::Event(e) if matches!(e.kind, EventKind::OverrideCleared { .. }) => {
+                    Some(e.at)
+                }
+                _ => None,
+            })
+            .collect();
+        assert_eq!(cleared.len(), 2);
+        assert_ne!(cleared[0], cleared[1]);
+    }
+
+    #[test]
+    fn override_duration_is_capped() {
+        let mut s = Setup::new(BoardConfig::default());
+        s.shared.lock().unwrap().commands.push(Command::Override(
+            Actuator::Light,
+            OverrideRequest {
+                on: true,
+                minutes: u32::MAX,
+            },
+        ));
+        s.run_secs(1);
+        let until = s.controller.overrides.light.as_ref().unwrap().until;
+        assert!(until - s.now <= TimeDelta::minutes(MAX_OVERRIDE_MINUTES.into()));
     }
 }

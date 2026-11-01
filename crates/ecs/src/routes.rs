@@ -4,8 +4,8 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use autoweed_shared::{
-    ApiError, BoardConfig, EcsStatus, Event, Health, History, LoginRequest, OverrideRequest,
-    PumpRequest, RangeQuery, SessionInfo,
+    ApiError, BoardConfig, EcsStatus, Event, Health, History, LoginRequest, MAX_MANUAL_PUMP_SECS,
+    MAX_OVERRIDE_MINUTES, OverrideRequest, PumpRequest, RangeQuery, SessionInfo,
 };
 use axum::extract::{ConnectInfo, Path, Query, Request, State};
 use axum::http::{HeaderMap, StatusCode, header};
@@ -228,6 +228,12 @@ async fn pump(
     State(state): State<Arc<AppState>>,
     Json(req): Json<PumpRequest>,
 ) -> ApiResult<StatusCode> {
+    if !(1..=MAX_MANUAL_PUMP_SECS).contains(&req.secs) {
+        return Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            format!("Laufzeit muss zwischen 1 und {MAX_MANUAL_PUMP_SECS} s liegen"),
+        ));
+    }
     state.board.pump(&req).await.map_err(AppError::board)?;
     state.config_changed.notify_one();
     Ok(StatusCode::ACCEPTED)
@@ -240,6 +246,12 @@ async fn override_actuator(
 ) -> ApiResult<StatusCode> {
     if !matches!(actuator.as_str(), "heater" | "light") {
         return Err(AppError::new(StatusCode::NOT_FOUND, "Unbekannter Aktor"));
+    }
+    if req.minutes > MAX_OVERRIDE_MINUTES {
+        return Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            format!("Höchstens {MAX_OVERRIDE_MINUTES} min"),
+        ));
     }
     state
         .board

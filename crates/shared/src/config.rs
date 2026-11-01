@@ -260,3 +260,37 @@ impl SoilCalibration {
         ((dry - f32::from(raw)) / (dry - wet) * 100.0).clamp(0.0, 100.0)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_is_valid() {
+        assert_eq!(BoardConfig::default().validate(), Ok(()));
+    }
+
+    #[test]
+    fn collects_all_errors() {
+        let mut config = BoardConfig {
+            measure_interval_secs: 1,
+            ..Default::default()
+        };
+        config.watering.pump_secs = 0;
+        config.soil_calibration.wet_raw = config.soil_calibration.dry_raw;
+        assert_eq!(config.validate().unwrap_err().len(), 3);
+    }
+
+    #[test]
+    fn soil_percent_is_clamped() {
+        let c = SoilCalibration {
+            dry_raw: 20_000,
+            wet_raw: 10_000,
+        };
+        assert_eq!(c.percent(20_000), 0.0);
+        assert_eq!(c.percent(15_000), 50.0);
+        assert_eq!(c.percent(10_000), 100.0);
+        assert_eq!(c.percent(25_000), 0.0);
+        assert_eq!(c.percent(5_000), 100.0);
+    }
+}

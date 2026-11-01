@@ -13,6 +13,12 @@ use super::{Climate, Hardware};
 
 const SHT_ADDR: u16 = 0x44;
 const ADS1115_ADDR: u16 = 0x48;
+/// Plausibler Bereich des Bodensensors (±4,096 V: 1 LSB = 125 µV). Ein
+/// abgezogener Sensor liest über den 1-MΩ-Pull-down an A0 fast 0, ein
+/// Kurzschluss nach 3,3 V ca. 26 400. Ohne diese Prüfung würde die Pumpe
+/// mit einem Phantomwert gießen.
+const SOIL_RAW_MIN: i16 = 2_000;
+const SOIL_RAW_MAX: i16 = 25_000;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ClimateSensor {
@@ -47,13 +53,15 @@ impl PiHardware {
             Level::Low
         };
         // Alle Ausgänge starten im Zustand "aus" und behalten ihren Zustand,
-        // wenn das Programm endet (kein Zurücksetzen auf Eingang).
+        // wenn das Programm endet (kein Zurücksetzen auf Eingang). Der Pegel
+        // wird vor dem Umschalten auf Ausgang gesetzt, sonst zieht ein Relais
+        // beim Start kurz an.
         let output = |pin: u8, off: Level| -> Result<OutputPin> {
-            let mut pin = gpio
-                .get(pin)
-                .with_context(|| format!("GPIO {pin}"))?
-                .into_output();
-            pin.write(off);
+            let pin = gpio.get(pin).with_context(|| format!("GPIO {pin}"))?;
+            let mut pin = match off {
+                Level::High => pin.into_output_high(),
+                Level::Low => pin.into_output_low(),
+            };
             pin.set_reset_on_drop(false);
             Ok(pin)
         };
@@ -125,7 +133,11 @@ impl Hardware for PiHardware {
         self.i2c.write(&[0x01, 0xC3, 0x83])?;
         let mut buf = [0u8; 2];
         self.transfer(ADS1115_ADDR, &[0x00], Duration::from_millis(9), &mut buf)?;
-        Ok(i16::from_be_bytes(buf))
+        let raw = i16::from_be_bytes(buf);
+        if !(SOIL_RAW_MIN..=SOIL_RAW_MAX).contains(&raw) {
+            bail!("Rohwert {raw} unplausibel, Sensor abgezogen oder Kurzschluss?");
+        }
+        Ok(raw)
     }
 
     fn reinit_climate(&mut self) -> Result<()> {

@@ -7,3 +7,9 @@ version = "0.2.2"
 edition = "2024"
 license = "AGPL-3.0-only"
 repository = "https://github.com/Prinz-Autistimus/autoweed"
+
+# Ein Panic beendet den ganzen Prozess, damit Docker ihn neu startet. Sonst
+# stünde z. B. die Regelschleife des Boards still, während die API weiter
+# antwortet, oder der Poller von ECS wäre unbemerkt beendet.
+[profile.release]
+panic = "abort"

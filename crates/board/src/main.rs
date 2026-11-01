@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use anyhow::{Context, Result, bail};
-use autoweed_shared::{BoardConfig, BoardStatus, BufferEntry, Event, EventKind};
+use autoweed_shared::{BoardConfig, BufferEntry, Event, EventKind};
 use hardware::Hardware;
 use hardware::pi::{ClimateSensor, PiHardware, Pins};
 use hardware::sim::SimHardware;
@@ -38,15 +38,15 @@ fn build_hardware() -> Result<Box<dyn Hardware>> {
             Ok(Box::new(SimHardware::new(speed, fail_rate)))
         }
         "pi" => {
-            let sensor = match env_or("CLIMATE_SENSOR", "sht31").as_str() {
+            let sensor = match env_or("CLIMATE_SENSOR", "sht40").as_str() {
                 "sht31" => ClimateSensor::Sht31,
                 "sht40" => ClimateSensor::Sht40,
                 other => bail!("CLIMATE_SENSOR={other} ist ungültig (sht31 oder sht40)"),
             };
             let pins = Pins {
-                heater: env_parse("HEATER_PIN", 17)?,
-                light: env_parse("LIGHT_PIN", 27)?,
-                pump: env_parse("PUMP_PIN", 22)?,
+                heater: env_parse("HEATER_PIN", 5)?,
+                light: env_parse("LIGHT_PIN", 6)?,
+                pump: env_parse("PUMP_PIN", 13)?,
             };
             let active_low = env_parse("RELAY_ACTIVE_LOW", true)?;
             tracing::info!("Hardware: {sensor:?}, {pins:?}, Relais aktiv-low: {active_low}");
@@ -99,25 +99,7 @@ async fn main() -> Result<()> {
             version: env!("CARGO_PKG_VERSION").into(),
         },
     }));
-    let shared = Arc::new(Mutex::new(Shared {
-        config,
-        config_from_ecs,
-        status: BoardStatus {
-            version: env!("CARGO_PKG_VERSION").into(),
-            time: chrono::Utc::now(),
-            time_synced: false,
-            config_version: None,
-            sensors: Default::default(),
-            actuators: Default::default(),
-            overrides: Default::default(),
-            light_phase: None,
-            pump_locked: false,
-            pumped_secs_today: 0,
-            errors: Vec::new(),
-        },
-        buffer,
-        commands: Vec::new(),
-    }));
+    let shared = Arc::new(Mutex::new(Shared::new(config, config_from_ecs, buffer)));
 
     // Die Regelschleife läuft in einem eigenen Thread, unabhängig von der API.
     let stop = Arc::new(AtomicBool::new(false));
