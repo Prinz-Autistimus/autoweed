@@ -1,7 +1,7 @@
 # Interne Verdrahtung im Controller-Gehäuse.
 # Rendern: wireviz controller.yml  (siehe README.md)
 #
-# Pinbelegung des Pi wie in docs/architecture.md (BCM 17/27/22).
+# Pinbelegung des Pi wie in docs/architecture.md (BCM 5/6/13, Pins 29/31/33).
 # Die 230-V-Seite ist nur als Anschlussblock eingezeichnet; deren Verdrahtung
 # (Netzteil-Eingang, C14, Schuko, Relaiskontakte) legt die Elektrofachkraft fest.
 
@@ -12,8 +12,9 @@ connectors:
   PI:
     type: Raspberry Pi 3
     subtype: GPIO-Leiste (nur belegte Pins)
-    pins: [1, 3, 5, 6, 11, 13, 14, 15, 17]
-    pinlabels: [3V3, SDA (GPIO2), SCL (GPIO3), GND, GPIO17 Heizung, GPIO27 Licht, GND, GPIO22 Pumpe, 3V3]
+    pins: [1, 3, 5, 6, 17, 29, 31, 33, 34]
+    pinlabels: [3V3, SDA (GPIO2), SCL (GPIO3), GND, 3V3, GPIO5 Heizung, GPIO6 Licht, GPIO13 Pumpe, GND]
+    notes: GPIO5/6 haben beim Booten einen Pull-up (Relais bleiben aus), GPIO13 einen Pull-down (Pumpe bleibt aus).
   PI_USB:
     type: Raspberry Pi 3
     subtype: Micro-USB (Stromversorgung)
@@ -40,7 +41,7 @@ connectors:
     subtype: I²C-Adresse 0x48
     pinlabels: [VDD, GND, SCL, SDA, ADDR, ALRT, A0, A1, A2, A3]
     loops: [[5, 2]]   # ADDR (Pin 5) an GND (Pin 2)
-    notes: ADDR an GND → Adresse 0x48. A1–A3 frei.
+    notes: ADDR an GND → Adresse 0x48. A1–A3 frei. 1 MΩ von A0 nach GND (auf dem Verteiler), damit ein abgezogener Sensor sicher 0 liest.
   REL_IN:
     type: Relais-Modul 2-Kanal
     subtype: Steuerseite
@@ -168,11 +169,11 @@ connections:
     - W_SOIL_SIGNAL: [1]
     - J_SOIL: [AOUT]
   # Relais: VCC 3,3 V (Optokoppler-LED), IN1 Heizung, IN2 Lampe
-  - - PI: [17, 11, 13]
+  - - PI: [17, 29, 31]
     - W_RELAY_CTRL: [1-3]
     - REL_IN: [VCC, IN1, IN2]
   # Pumpe
-  - - PI: [15, 14]
+  - - PI: [33, 34]
     - W_MOS_CTRL: [1-2]
     - MOS: [TRIG, GND]
   - - MOS: [OUT+, OUT-]

@@ -27,13 +27,18 @@ Beide Stacks werden aus dem Portainer auf ECS verwaltet. Auf dem Pi läuft dafü
    ls /dev/i2c-1 /dev/gpiomem      # beide müssen existieren
    ls /run/systemd/timesync/synchronized   # Uhr synchron (sonst bleibt das Licht aus)
    ```
-5. **Hardware-Watchdog** einschalten. Bleibt der Kernel hängen, startet der Pi nach 15 s neu (15 s ist das Maximum beim Pi):
+5. **Ausgänge schon beim Booten auf „aus“ setzen.** Bis der Container läuft, vergehen nach dem Einschalten 30–60 s. Die Firmware legt die Pegel fest, bevor der Kernel startet: Relais-Eingänge (GPIO5/6, schalten bei LOW) auf HIGH, Pumpe (GPIO13) auf LOW. Bei geänderten `*_PIN`-Variablen die Nummern hier anpassen.
+   ```bash
+   printf '\n# AutoWeed: Relais aus (aktiv-low), Pumpe aus\ngpio=5,6=op,dh\ngpio=13=op,dl\n' | sudo tee -a /boot/firmware/config.txt
+   ```
+   Die Pull-ups bzw. -downs der Pins würden auch ohne diese Zeilen in die richtige Richtung ziehen, so ist es aber eindeutig.
+6. **Hardware-Watchdog** einschalten. Bleibt der Kernel hängen, startet der Pi nach 15 s neu (15 s ist das Maximum beim Pi):
    ```bash
    sudo mkdir -p /etc/systemd/system.conf.d
    printf '[Manager]\nRuntimeWatchdogSec=15s\nRebootWatchdogSec=2min\n' | sudo tee /etc/systemd/system.conf.d/watchdog.conf
    sudo reboot
    ```
-6. **Docker installieren:**
+7. **Docker installieren:**
    ```bash
    curl -fsSL https://get.docker.com | sudo sh
    sudo usermod -aG docker "$USER"   # danach neu einloggen

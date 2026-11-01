@@ -51,22 +51,34 @@ Alle Endpunkte erwarten `Authorization: Bearer <token>`. Der Token wird als Umge
 | `POST` | `/api/v1/override/{heater,light}` | `{"on": bool, "minutes": n}`: manuell übersteuern, `minutes: 0` beendet die Übersteuerung. Nach Ablauf übernimmt wieder die Regelung. |
 | `POST` | `/api/v1/pump/unlock` | Sperre „Eimer leer“ aufheben |
 
-Manuelle Befehle haben **immer eine Laufzeit**, ein dauerhaftes „an“ gibt es nicht. So bleibt kein Aktor hängen, wenn die Verbindung abbricht.
+Manuelle Befehle haben **immer eine Laufzeit** (Pumpe höchstens 120 s, Heizung/Licht höchstens 24 h), ein dauerhaftes „an“ gibt es nicht. So bleibt kein Aktor hängen, wenn die Verbindung abbricht.
 
 Die API-Typen liegen in einem gemeinsamen Crate (`shared`). Daraus werden mit `ts-rs` auch die TypeScript-Typen für das Frontend erzeugt.
 
-## Pinbelegung (Vorschlag, BCM)
+## Pinbelegung (BCM)
 
-| Funktion | GPIO | Pin |
-|---|---|---|
-| I²C SDA (SHT40, ADS1115) | 2 | 3 |
-| I²C SCL | 3 | 5 |
-| 3,3 V (Sensoren, Relais-VCC) | – | 1 / 17 |
-| Relais Heizung | 17 | 11 |
-| Relais Lampe | 27 | 13 |
-| MOSFET Pumpe | 22 | 15 |
+| Funktion | GPIO | Pin | Zustand beim Booten |
+|---|---|---|---|
+| 3,3 V → Verteiler (SHT40, ADS1115, Bodensensor) | – | 1 | |
+| I²C SDA (SHT40, ADS1115) | 2 | 3 | |
+| I²C SCL | 3 | 5 | |
+| GND → Verteiler | – | 6 | |
+| 3,3 V → Relais-VCC (Optokoppler) | – | 17 | |
+| Relais K1 Heizung (IN1) | 5 | 29 | Pull-up → Relais aus |
+| Relais K2 Lampe (IN2) | 6 | 31 | Pull-up → Relais aus |
+| MOSFET Pumpe (TRIG) | 13 | 33 | Pull-down → Pumpe aus |
+| GND → MOSFET | – | 34 | |
 
-Die Ausgänge sind über `HEATER_PIN`, `LIGHT_PIN` und `PUMP_PIN` im Pi-Stack änderbar.
+Warum diese Pins:
+
+- **Sicherer Zustand beim Einschalten.** Bis der Container läuft, vergehen 30–60 s, in denen die Software nichts schaltet. Das Relais-Modul schaltet bei LOW. GPIO 0–8 haben nach dem Reset einen Pull-up, GPIO 9–27 einen Pull-down. Die Relais hängen deshalb an GPIO5/6 (HIGH = aus), die Pumpe an GPIO13 (LOW = aus). Mit der alten Belegung (GPIO17/27) zogen die Pull-downs die Relais-Eingänge auf LOW, also auf „an“. Zusätzlich setzt die Firmware die Pegel per `config.txt` (siehe `deploy/README.md`).
+- **Keine Doppelbelegung:** GPIO5/6/13 gehören zu keiner Schnittstelle, die später gebraucht werden könnte (I²C, SPI, UART, 1-Wire auf GPIO4, HAT-EEPROM auf GPIO0/1).
+- **Ein Stecker:** Pins 29, 31, 33 und 34 liegen nebeneinander am unteren Ende der Leiste.
+- GPIO13 kann Hardware-PWM, falls die Pumpe später gedrosselt werden soll.
+
+Die Ausgänge sind über `HEATER_PIN`, `LIGHT_PIN` und `PUMP_PIN` im Pi-Stack änderbar. Die verbindliche Verdrahtung steht in `hardware/wiring/`.
+
+**Bodensensor-Plausibilität:** Zwischen A0 des ADS1115 und GND sitzt ein 1-MΩ-Widerstand. Ist der Sensor abgezogen, liest der ADC dann sicher fast 0 statt eines zufälligen Werts. Das Board wertet Rohwerte unter 2000 oder über 25 000 als Sensorfehler, gesperrt wird dann wie bei einem I²C-Fehler. Ohne diese Prüfung könnte ein offener Eingang „trocken“ melden und die Pumpe auslösen.
 
 ## Regellogik
 
@@ -81,17 +93,17 @@ Die Ausgänge sind über `HEATER_PIN`, `LIGHT_PIN` und `PUMP_PIN` im Pi-Stack ä
 | Situation | Heizung | Licht | Pumpe | Meldung |
 |---|---|---|---|---|
 | Temperatursensor ausgefallen | aus | weiter nach Zeitplan | normal | UI, ntfy ab 10 s |
-| Bodensensor ausgefallen | normal | weiter nach Zeitplan | gesperrt | UI, ntfy ab 10 s |
+| Bodensensor ausgefallen oder abgezogen (Rohwert unplausibel) | normal | weiter nach Zeitplan | gesperrt | UI, ntfy ab 10 s |
 | Luftfeuchte ausgefallen | normal | normal | normal | UI, ntfy ab 10 s |
 | ECS bzw. Netzwerk weg | normal | normal | normal | ECS: „Board nicht erreichbar“ (ntfy) |
 | Internet weg (LAN ok) | normal | normal, die Uhr läuft weiter | normal | – |
-| Board-Software abgestürzt | Docker-Neustart (`restart: always`), danach wieder normal | ← | ← | ECS: „Board nicht erreichbar“ |
+| Board-Software abgestürzt (auch Panic in der Regelschleife: `panic = "abort"` beendet den ganzen Prozess) | Docker-Neustart (`restart: always`), danach wieder normal | ← | ← | ECS: „Board nicht erreichbar“ |
 | Board-Kernel hängt | Hardware-Watchdog des Pi startet ihn neu | ← | ← | ← |
 | Board bekommt SIGTERM (z. B. Update) | – | – | sofort aus | – |
 | Start ohne Zeit-Sync (Stromausfall und Internet weg) | normal | aus, bis die Zeit synchron ist | normal | UI, ntfy |
 | ECS-Software hängt | Board regelt weiter | ← | ← | muss der Benutzer selbst bemerken |
 
-Beim Start sind alle Aktoren aus, bis der erste Regeldurchlauf ihren Zustand festlegt.
+Beim Start sind alle Aktoren aus, bis der erste Regeldurchlauf ihren Zustand festlegt. Die Software setzt den „aus“-Pegel, bevor sie einen Pin auf Ausgang schaltet, damit kein Relais kurz anzieht.
 
 **Back-off für Sensoren:** 1 → 2 → 5 → 10 → 30 → 60 s, danach alle 60 s. Ab der 10-s-Stufe verschickt ECS eine ntfy-Nachricht.
 
@@ -99,7 +111,7 @@ Beim Start sind alle Aktoren aus, bis der erste Regeldurchlauf ihren Zustand fes
 
 | Image | Plattform | Läuft auf | Zugriff auf Geräte |
 |---|---|---|---|
-| `ghcr.io/prinz-autistimus/autoweed-board` | linux/arm64 | Pi 3 (Raspberry Pi OS 64-bit) | `/dev/gpiochip0`, `/dev/i2c-1` |
+| `ghcr.io/prinz-autistimus/autoweed-board` | linux/arm64 | Pi 3 (Raspberry Pi OS 64-bit) | `/dev/gpiomem`, `/dev/i2c-1` |
 | `ghcr.io/prinz-autistimus/autoweed-ecs` | linux/amd64 | ECS | – |
 
 - Gebaut wird in GitHub Actions: das Board-Image nativ auf einem arm64-Runner (`ubuntu-24.04-arm`), das ECS-Image auf amd64. Der Entwickler-Laptop muss nichts bauen.
@@ -121,7 +133,7 @@ Das Repo enthält zwei fertige Setups, die direkt als Portainer-Stack eingefügt
 - Der Topic-Name sollte zufällig gewählt werden (z. B. `autoweed-<zufall>`), sofern die ntfy-Instanz keine Zugriffskontrolle nutzt.
 - Watchtower: Das Original `containrrr/watchtower` ist seit Dezember 2025 archiviert und hat Probleme mit Docker 29 (ECS läuft mit 29.4). Verwendet wird deshalb der gepflegte Fork `nicholas-fedor/watchtower`. Bisher läuft auf ECS noch kein Watchtower.
 - Watchtower läuft in beiden Stacks mit `--label-enable` und aktualisiert **nur** die Container mit dem Label `com.centurylinklabs.watchtower.enable=true`. So fasst es die übrigen Container auf ECS nicht an.
-- `autoweed-board` läuft mit `restart: always`. Es bekommt die Geräte `/dev/gpiochip0` und `/dev/i2c-1` und ein Volume für die lokale Konfigurationskopie.
+- `autoweed-board` läuft mit `restart: always`. Es bekommt die Geräte `/dev/gpiomem` und `/dev/i2c-1` und ein Volume für die lokale Konfigurationskopie.
 
 ### Portainer
 

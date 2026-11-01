@@ -207,8 +207,8 @@ for n in range(1, 41):
     PI[n] = (x, y)
 rect(PI[1][0] - 4, PI[1][1] - 4, 8, 8, "none", "#fff", sw=1)
 text(PI[1][0], PI_Y + 50, "1", 9, "#fff", "middle")
-text(HEADER_X0 - 6, PI_Y + 66, "Pin 1: 3V3 · 3: SDA · 5: SCL · 6: GND · 11: GPIO17", 10, "#e8f5ea")
-text(HEADER_X0 - 6, PI_Y + 80, "13: GPIO27 · 14: GND · 15: GPIO22 · 17: 3V3", 10, "#e8f5ea")
+text(HEADER_X0 - 6, PI_Y + 66, "Pin 1: 3V3 · 3: SDA · 5: SCL · 6: GND · 17: 3V3", 10, "#e8f5ea")
+text(HEADER_X0 - 6, PI_Y + 80, "29: GPIO5 · 31: GPIO6 · 33: GPIO13 · 34: GND", 10, "#e8f5ea")
 PI_USB = (PI_X + 53, PI_Y + 282)
 
 # Relais-Modul
@@ -345,14 +345,18 @@ for name, rail, color in (("VDD", "3V3", "RD"), ("GND", "GND", "BK"), ("SCL", "S
     x = ADS[name][0]
     wire(R[color], (x, RAILS[rail]), ADS[name])
 wire(R["BK"], ADS["ADDR"], (ADS["ADDR"][0], 340), (ADS["GND"][0] + 6, 340), (ADS["GND"][0] + 6, RAILS["GND"]), width=3)
+# 1 MΩ von A0 nach GND: abgezogener Bodensensor liest sicher 0
+RES_X = ADS["A0"][0] + 11
+wire(R["BK"], (ADS["A0"][0], 338), (RES_X, 338), (RES_X, RAILS["GND"]), width=2)
 # Pi 3V3 (Pin 17) → Relais VCC (Optokoppler-Seite)
 wire(R["RD"], PI[17], (PI[17][0], 284), (920, 284), (920, REL["VCC"][1]), REL["VCC"])
 # Pi → Relais IN1/IN2
-wire(R["BU"], PI[11], (PI[11][0], 300), (928 - 20, 300), (908, REL["IN1"][1]), REL["IN1"])
-wire(R["VT"], PI[13], (PI[13][0], 308), (900, 308), (900, REL["IN2"][1]), REL["IN2"])
+wire(R["BU"], PI[29], (PI[29][0], 300), (908, 300), (908, REL["IN1"][1]), REL["IN1"])
+wire(R["VT"], PI[31], (PI[31][0], 308), (900, 308), (900, REL["IN2"][1]), REL["IN2"])
 # Pi → MOSFET
-wire(R["GY"], PI[15], (PI[15][0], 316), (960, 316), (960, MOS["TRIG"][1]), MOS["TRIG"])
-wire(R["BK"], PI[14], (PI[14][0], 268), (968, 268), (968, MOS["GND"][1]), MOS["GND"])
+wire(R["GY"], PI[33], (PI[33][0], 316), (960, 316), (960, MOS["TRIG"][1]), MOS["TRIG"])
+# Pin 34 liegt in derselben Spalte wie Pin 33, daher ein kleiner Versatz.
+wire(R["BK"], PI[34], (PI[34][0] + 7, PI[34][1] - 7), (PI[34][0] + 7, 268), (968, 268), (968, MOS["GND"][1]), MOS["GND"])
 # MOSFET → Pumpenbuchse
 wire(R["RD"], MOS["OUT+"], (MOS["OUT+"][0], 820), (GX_PINS["PUMP:1"][0], 820), GX_PINS["PUMP:1"])
 wire(R["BK"], MOS["OUT-"], (MOS["OUT-"][0], 830), (GX_PINS["PUMP:2"][0], 830), GX_PINS["PUMP:2"])
@@ -374,13 +378,19 @@ for color, d, width in wires:
     add(f'<path d="{d}" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="{width + 2.5}" stroke-linecap="round" stroke-linejoin="round"/>')
     add(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round"/>')
 
+# Widerstandskörper über dem Kabel
+rect(RES_X - 4, 343, 8, 22, "#d8c08f", "#8a6d3b", 2, 1)
+for i, c in enumerate(("#8b4513", "#2a2a2a", "#2e9d4a")):  # braun schwarz grün = 1 MΩ
+    rect(RES_X - 4, 347 + i * 5, 8, 2, c)
+text(RES_X + 7, 358, "1 MΩ", 8, "#4b3a17", "start", "bold")
+
 # ---------------------------------------------------------------- Legende
 LX, LY = 30, 960
 rect(LX, LY, 360, 236, "#fafaf7", "#cfcdc4", 10, 1.5)
 text(LX + 16, LY + 26, "Aderfarben", 13, "#333", weight="bold")
 legend = [("RD", "Plus: 3,3 V / 5 V / 12 V"), ("BK", "GND / Minus"), ("GN", "I²C SDA"), ("YE", "I²C SCL"),
-          ("OG", "5 V Relais-Spulen (JD-VCC)"), ("BU", "GPIO17 → Relais Heizung"),
-          ("VT", "GPIO27 → Relais Lampe"), ("GY", "GPIO22 → MOSFET Pumpe"), ("WH", "Bodenfeuchte-Signal → A0")]
+          ("OG", "5 V Relais-Spulen (JD-VCC)"), ("BU", "GPIO5 → Relais Heizung"),
+          ("VT", "GPIO6 → Relais Lampe"), ("GY", "GPIO13 → MOSFET Pumpe"), ("WH", "Bodenfeuchte-Signal → A0")]
 for i, (code, label) in enumerate(legend):
     y = LY + 48 + i * 20
     add(f'<line x1="{LX + 18}" y1="{y}" x2="{LX + 52}" y2="{y}" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round"/>')

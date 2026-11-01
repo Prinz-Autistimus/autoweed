@@ -14,9 +14,9 @@ services:
     environment:
       - BOARD_TOKEN=${BOARD_TOKEN:?BOARD_TOKEN fehlt}
       - CLIMATE_SENSOR=${CLIMATE_SENSOR:-sht40}     # sht31 oder sht40
-      - HEATER_PIN=${HEATER_PIN:-17}                # BCM-Nummern
-      - LIGHT_PIN=${LIGHT_PIN:-27}
-      - PUMP_PIN=${PUMP_PIN:-22}
+      - HEATER_PIN=${HEATER_PIN:-5}                 # BCM-Nummern (Pins 29/31/33)
+      - LIGHT_PIN=${LIGHT_PIN:-6}
+      - PUMP_PIN=${PUMP_PIN:-13}
       - RELAY_ACTIVE_LOW=${RELAY_ACTIVE_LOW:-true}
       - RUST_LOG=${RUST_LOG:-info}
     volumes:

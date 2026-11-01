@@ -221,8 +221,8 @@
 <circle cx="709.3" cy="345" r="3" fill="#c9a227" stroke="none" stroke-width="1"/>
 <rect x="464.0" y="354" width="8" height="8" rx="0" fill="none" stroke="#fff" stroke-width="1" />
 <text x="468.0" y="380" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="9" fill="#fff" text-anchor="middle" font-weight="normal">1</text>
-<text x="462" y="396" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10" fill="#e8f5ea" text-anchor="start" font-weight="normal">Pin 1: 3V3 · 3: SDA · 5: SCL · 6: GND · 11: GPIO17</text>
-<text x="462" y="410" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10" fill="#e8f5ea" text-anchor="start" font-weight="normal">13: GPIO27 · 14: GND · 15: GPIO22 · 17: 3V3</text>
+<text x="462" y="396" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10" fill="#e8f5ea" text-anchor="start" font-weight="normal">Pin 1: 3V3 · 3: SDA · 5: SCL · 6: GND · 17: 3V3</text>
+<text x="462" y="410" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10" fill="#e8f5ea" text-anchor="start" font-weight="normal">29: GPIO5 · 31: GPIO6 · 33: GPIO13 · 34: GND</text>
 <rect x="930" y="56" width="300" height="180" rx="8" fill="#2667b0" stroke="#174a84" stroke-width="1.5" />
 <rect x="1000" y="74" width="120" height="66" rx="4" fill="#1d56c9" stroke="#123c8f" stroke-width="1.5" />
 <text x="1060" y="104" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10" fill="#e6eeff" text-anchor="middle" font-weight="bold">SRD-05VDC</text>
@@ -400,16 +400,18 @@
 <path d="M166.0,422.0 L166.0,322.0" fill="none" stroke="#2e9d4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M188.0,322.0 L188.0,331.0 Q188.0,340.0 179.0,340.0 L137.0,340.0 Q128.0,340.0 128.0,349.0 L128.0,397.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M188.0,322.0 L188.0,331.0 Q188.0,340.0 179.0,340.0 L137.0,340.0 Q128.0,340.0 128.0,349.0 L128.0,397.0" fill="none" stroke="#2a2a2a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M232.0,338.0 L237.5,338.0 Q243.0,338.0 243.0,343.5 L243.0,397.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M232.0,338.0 L237.5,338.0 Q243.0,338.0 243.0,343.5 L243.0,397.0" fill="none" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M569.6,358.0 L569.6,293.0 Q569.6,284.0 578.6,284.0 L911.0,284.0 Q920.0,284.0 920.0,275.0 L920.0,137.0 Q920.0,128.0 929.0,128.0 L944.0,128.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M569.6,358.0 L569.6,293.0 Q569.6,284.0 578.6,284.0 L911.0,284.0 Q920.0,284.0 920.0,275.0 L920.0,137.0 Q920.0,128.0 929.0,128.0 L944.0,128.0" fill="none" stroke="#d93a2f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M531.5,358.0 L531.5,309.0 Q531.5,300.0 540.5,300.0 L899.0,300.0 Q908.0,300.0 908.0,291.0 L908.0,105.0 Q908.0,96.0 917.0,96.0 L944.0,96.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M531.5,358.0 L531.5,309.0 Q531.5,300.0 540.5,300.0 L899.0,300.0 Q908.0,300.0 908.0,291.0 L908.0,105.0 Q908.0,96.0 917.0,96.0 L944.0,96.0" fill="none" stroke="#2f6fd6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M544.2,358.0 L544.2,317.0 Q544.2,308.0 553.2,308.0 L891.0,308.0 Q900.0,308.0 900.0,299.0 L900.0,121.0 Q900.0,112.0 909.0,112.0 L944.0,112.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M544.2,358.0 L544.2,317.0 Q544.2,308.0 553.2,308.0 L891.0,308.0 Q900.0,308.0 900.0,299.0 L900.0,121.0 Q900.0,112.0 909.0,112.0 L944.0,112.0" fill="none" stroke="#8e44c9" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M556.9,358.0 L556.9,325.0 Q556.9,316.0 565.9,316.0 L951.0,316.0 Q960.0,316.0 960.0,325.0 L960.0,671.0 Q960.0,680.0 969.0,680.0 L1012.0,680.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M556.9,358.0 L556.9,325.0 Q556.9,316.0 565.9,316.0 L951.0,316.0 Q960.0,316.0 960.0,325.0 L960.0,671.0 Q960.0,680.0 969.0,680.0 L1012.0,680.0" fill="none" stroke="#8c9198" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M544.2,345.0 L544.2,277.0 Q544.2,268.0 553.2,268.0 L959.0,268.0 Q968.0,268.0 968.0,277.0 L968.0,689.0 Q968.0,698.0 977.0,698.0 L1012.0,698.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M544.2,345.0 L544.2,277.0 Q544.2,268.0 553.2,268.0 L959.0,268.0 Q968.0,268.0 968.0,277.0 L968.0,689.0 Q968.0,698.0 977.0,698.0 L1012.0,698.0" fill="none" stroke="#2a2a2a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M645.8,358.0 L645.8,309.0 Q645.8,300.0 654.8,300.0 L899.0,300.0 Q908.0,300.0 908.0,291.0 L908.0,105.0 Q908.0,96.0 917.0,96.0 L944.0,96.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M645.8,358.0 L645.8,309.0 Q645.8,300.0 654.8,300.0 L899.0,300.0 Q908.0,300.0 908.0,291.0 L908.0,105.0 Q908.0,96.0 917.0,96.0 L944.0,96.0" fill="none" stroke="#2f6fd6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M658.5,358.0 L658.5,317.0 Q658.5,308.0 667.5,308.0 L891.0,308.0 Q900.0,308.0 900.0,299.0 L900.0,121.0 Q900.0,112.0 909.0,112.0 L944.0,112.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M658.5,358.0 L658.5,317.0 Q658.5,308.0 667.5,308.0 L891.0,308.0 Q900.0,308.0 900.0,299.0 L900.0,121.0 Q900.0,112.0 909.0,112.0 L944.0,112.0" fill="none" stroke="#8e44c9" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M671.2,358.0 L671.2,325.0 Q671.2,316.0 680.2,316.0 L951.0,316.0 Q960.0,316.0 960.0,325.0 L960.0,671.0 Q960.0,680.0 969.0,680.0 L1012.0,680.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M671.2,358.0 L671.2,325.0 Q671.2,316.0 680.2,316.0 L951.0,316.0 Q960.0,316.0 960.0,325.0 L960.0,671.0 Q960.0,680.0 969.0,680.0 L1012.0,680.0" fill="none" stroke="#8c9198" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M671.2,345.0 L674.7,341.5 Q678.2,338.0 678.2,334.5 L678.2,277.0 Q678.2,268.0 687.2,268.0 L959.0,268.0 Q968.0,268.0 968.0,277.0 L968.0,689.0 Q968.0,698.0 977.0,698.0 L1012.0,698.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M671.2,345.0 L674.7,341.5 Q678.2,338.0 678.2,334.5 L678.2,277.0 Q678.2,268.0 687.2,268.0 L959.0,268.0 Q968.0,268.0 968.0,277.0 L968.0,689.0 Q968.0,698.0 977.0,698.0 L1012.0,698.0" fill="none" stroke="#2a2a2a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M1135.0,758.0 L1135.0,812.2 Q1135.0,820.0 1142.8,820.0 L1142.8,820.0 Q1150.5,820.0 1150.5,827.8 L1150.5,855.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M1135.0,758.0 L1135.0,812.2 Q1135.0,820.0 1142.8,820.0 L1142.8,820.0 Q1150.5,820.0 1150.5,827.8 L1150.5,855.0" fill="none" stroke="#d93a2f" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M1165.0,758.0 L1165.0,827.2 Q1165.0,830.0 1162.2,830.0 L1162.2,830.0 Q1159.5,830.0 1159.5,832.8 L1159.5,855.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -432,6 +434,11 @@
 <path d="M862.0,537.0 L1271.5,537.0 Q1280.0,537.0 1280.0,528.5 L1280.0,520.0" fill="none" stroke="#9aa3ad" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M862.0,377.0 L866.0,377.0 Q870.0,377.0 870.0,381.0 L870.0,581.0 Q870.0,590.0 879.0,590.0 L1280.0,590.0" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M862.0,377.0 L866.0,377.0 Q870.0,377.0 870.0,381.0 L870.0,581.0 Q870.0,590.0 879.0,590.0 L1280.0,590.0" fill="none" stroke="#9aa3ad" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="239" y="343" width="8" height="22" rx="2" fill="#d8c08f" stroke="#8a6d3b" stroke-width="1" />
+<rect x="239" y="347" width="8" height="2" rx="0" fill="#8b4513" stroke="none" stroke-width="1" />
+<rect x="239" y="352" width="8" height="2" rx="0" fill="#2a2a2a" stroke="none" stroke-width="1" />
+<rect x="239" y="357" width="8" height="2" rx="0" fill="#2e9d4a" stroke="none" stroke-width="1" />
+<text x="250" y="358" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="8" fill="#4b3a17" text-anchor="start" font-weight="bold">1 MΩ</text>
 <rect x="30" y="960" width="360" height="236" rx="10" fill="#fafaf7" stroke="#cfcdc4" stroke-width="1.5" />
 <text x="46" y="986" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" fill="#333" text-anchor="start" font-weight="bold">Aderfarben</text>
 <line x1="48" y1="1008" x2="82" y2="1008" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round"/>
@@ -451,13 +458,13 @@
 <text x="94" y="1092" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">5 V Relais-Spulen (JD-VCC)</text>
 <line x1="48" y1="1108" x2="82" y2="1108" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round"/>
 <line x1="48" y1="1108" x2="82" y2="1108" stroke="#2f6fd6" stroke-width="5" stroke-linecap="round"/>
-<text x="94" y="1112" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">GPIO17 → Relais Heizung</text>
+<text x="94" y="1112" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">GPIO5 → Relais Heizung</text>
 <line x1="48" y1="1128" x2="82" y2="1128" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round"/>
 <line x1="48" y1="1128" x2="82" y2="1128" stroke="#8e44c9" stroke-width="5" stroke-linecap="round"/>
-<text x="94" y="1132" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">GPIO27 → Relais Lampe</text>
+<text x="94" y="1132" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">GPIO6 → Relais Lampe</text>
 <line x1="48" y1="1148" x2="82" y2="1148" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round"/>
 <line x1="48" y1="1148" x2="82" y2="1148" stroke="#8c9198" stroke-width="5" stroke-linecap="round"/>
-<text x="94" y="1152" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">GPIO22 → MOSFET Pumpe</text>
+<text x="94" y="1152" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">GPIO13 → MOSFET Pumpe</text>
 <line x1="48" y1="1168" x2="82" y2="1168" stroke="#000" stroke-opacity="0.35" stroke-width="7.5" stroke-linecap="round"/>
 <line x1="48" y1="1168" x2="82" y2="1168" stroke="#f5f5f5" stroke-width="5" stroke-linecap="round"/>
 <text x="94" y="1172" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" fill="#333" text-anchor="start" font-weight="normal">Bodenfeuchte-Signal → A0</text>
