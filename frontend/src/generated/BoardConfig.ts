@@ -6,8 +6,8 @@ import type { WateringConfig } from "./WateringConfig";
 
 export type BoardConfig = { 
 /**
- * Wird von ECS bei jeder Änderung erhöht. Das Board meldet die aktive
- * Version im Status, so erkennt ECS, ob die Konfiguration angekommen ist.
+ * Wird vom Server bei jeder Änderung erhöht. Das Board meldet die aktive
+ * Version im Status, so erkennt der Server, ob die Konfiguration angekommen ist.
  */
 version: number, 
 /**

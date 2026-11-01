@@ -7,7 +7,7 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 ## Aktueller Stand
 
 - **Phase:** 4–6 umgesetzt, alle Teile bestellt. GPIO-Belegung festgelegt (GPIO5/6/13, Pins 29/31/33), Software-Review mit Fixes und ersten Unit-Tests erledigt (noch nicht released).
-- **Nächster Schritt:** Release `v0.2.3` taggen, ECS-Stack in Portainer neu deployen (neue Compose-Variablen), Pi einrichten (3.5, inkl. `config.txt`-Zeilen für die Boot-Pegel), 1-MΩ-Widerstand besorgen, nach Lieferung 4.3 auf echter Hardware testen.
+- **Nächster Schritt:** Server-Stack in Portainer neu deployen (Image heißt jetzt `autoweed-server`, Konfiguration vorher exportieren, siehe deploy/README.md), Pi einrichten (3.5, inkl. `config.txt`-Zeilen für die Boot-Pegel), 1-MΩ-Widerstand besorgen, nach Lieferung 4.3 auf echter Hardware testen.
 - **Zuletzt aktualisiert:** 2026-11-01
 
 ## Offene Punkte
@@ -20,17 +20,17 @@ Grundlagen: [vision.md](vision.md) (was), [architecture.md](architecture.md) (wi
 
 ## Phase 0: Planung ✅
 - [x] Vision geklärt und überarbeitet
-- [x] Architektur festgelegt: Board regelt eigenständig, ECS für UI, Konfiguration und Historie
+- [x] Architektur festgelegt: Board regelt eigenständig, Server für UI, Konfiguration und Historie
 - [x] Fail-Safe-Matrix, API-Entwurf
 - [x] Teileliste
 - [x] Lizenz: AGPL-3.0
-- [x] Bestehendes ntfy auf ECS geprüft
+- [x] Bestehendes ntfy auf dem Server geprüft
 
 ## Phase 1: Repo und Gerüst
 Repo: https://github.com/Prinz-Autistimus/autoweed
 
 - [x] 1.1 `git init`, `.gitignore`, `README.md`, öffentliches GitHub-Repo anlegen
-- [x] 1.2 Cargo-Workspace mit den Crates `shared`, `board`, `ecs` (je ein „Hello World“ mit axum)
+- [x] 1.2 Cargo-Workspace mit den Crates `shared`, `board`, `server` (je ein „Hello World“ mit axum)
 - [x] 1.3 `frontend/` mit Vite, React und TypeScript
 - [x] 1.4 `ts-rs`: TypeScript-Typen aus `shared` erzeugen
 - [x] 1.5 **Teile bestellen** (bis 01.11.2026; nachträglich fehlt nur der 1-MΩ-Widerstand für A0)
@@ -38,17 +38,17 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 ## Phase 2: CI/CD
 - [x] 2.1 GitHub Actions: `cargo check`/`clippy`, Frontend-Build
 - [x] 2.2 Docker-Image `autoweed-board` (linux/arm64, nativer arm64-Runner) → GHCR
-- [x] 2.3 Docker-Image `autoweed-ecs` (linux/amd64, mit Frontend) → GHCR
+- [x] 2.3 Docker-Image `autoweed-server` (linux/amd64, mit Frontend) → GHCR
 - [x] 2.4 Releases über Git-Tags (`v*`), Images mit Version + `latest` taggen
 
 ## Phase 3: Deployment-Gerüst
 - [x] 3.1 `deploy/pi-compose.yml` (Board, Watchtower)
-- [x] 3.2 `deploy/host-compose.yml` (ECS, InfluxDB, Watchtower; ntfy extern)
+- [x] 3.2 `deploy/host-compose.yml` (Server, InfluxDB, Watchtower; ntfy extern)
 - [x] 3.3 `deploy/.env.example`
-- [x] 3.4 `deploy/README.md`: Pi OS 64-bit Lite (Pi 3), Docker, I²C aktivieren, Hardware-Watchdog, Portainer Agent, Einbindung in den ECS-Portainer
-- [ ] 3.5 Hello-World-Stacks auf Pi und ECS deployen und den Update-Weg über Watchtower testen
-  - [x] ECS: Stack `autoweed` läuft (Port 8097, InfluxDB ok, ntfy erreichbar, Watchtower nur auf AutoWeed-Container)
-  - [ ] Pi einrichten und Stack deployen, `BOARD_URL` im ECS-Stack auf die echte IP setzen
+- [x] 3.4 `deploy/README.md`: Pi OS 64-bit Lite (Pi 3), Docker, I²C aktivieren, Hardware-Watchdog, Portainer Agent, Einbindung in den Portainer des Servers
+- [ ] 3.5 Hello-World-Stacks auf Pi und Server deployen und den Update-Weg über Watchtower testen
+  - [x] Server: Stack `autoweed` läuft (Port 8097, InfluxDB ok, ntfy erreichbar, Watchtower nur auf AutoWeed-Container)
+  - [ ] Pi einrichten und Stack deployen, `BOARD_URL` im Server-Stack auf die echte IP setzen
   - [x] Update über Watchtower beobachtet (v0.2.0)
 
 ## Phase 4: Board-Software
@@ -65,7 +65,7 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 - [x] 4.11 Fehler bei fehlendem Zeit-Sync (Licht bleibt aus, bis die Uhrzeit synchron ist)
 - [x] 4.12 Review (01.11.2026): Pins ohne Schaltimpuls initialisieren, abgezogenen Bodensensor erkennen, `panic = "abort"`, Übersteuerung auf 24 h begrenzt, Ereignis-Zeitstempel eindeutig, Unit-Tests für Regelung, Licht, Puffer und Konfiguration
 
-## Phase 5: ECS-Backend
+## Phase 5: Server-Backend
 - [x] 5.1 Konfiguration speichern (Volume), versionieren, Export/Import
 - [x] 5.2 Konfiguration an das Board senden, auch nach dessen Neustart
 - [x] 5.3 Polling-Job: Messwerte und Ereignisse abholen → InfluxDB
@@ -92,7 +92,7 @@ Repo: https://github.com/Prinz-Autistimus/autoweed
 ## Phase 8: Inbetriebnahme
 - [ ] 8.1 Bodensensor kalibrieren (trocken/nass), mit eingebautem 1-MΩ-Widerstand
 - [ ] 8.2 Probelauf ohne Pflanze (mehrere Tage)
-- [ ] 8.3 Fail-Safe-Tests nach der Matrix: Sensor abziehen, Container killen, LAN trennen, ECS stoppen, Strom weg
+- [ ] 8.3 Fail-Safe-Tests nach der Matrix: Sensor abziehen, Container killen, LAN trennen, Server stoppen, Strom weg
 - [ ] 8.4 Proxy-Host im NPM (erledigt), ntfy-Topic (zufälliger Name) in der App abonnieren
 - [ ] 8.5 Erster Grow 🌱
 

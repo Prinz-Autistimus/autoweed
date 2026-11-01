@@ -15,7 +15,7 @@ jobs:
           - image: board
             runner: ubuntu-24.04-arm
             platform: linux/arm64
-          - image: ecs
+          - image: server
             runner: ubuntu-latest
             platform: linux/amd64
     runs-on: ${{ matrix.runner }}

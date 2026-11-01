@@ -13,7 +13,7 @@ export type BoardStatus = {
  */
 version: string, time: string, time_synced: boolean, 
 /**
- * Version der aktiven Konfiguration, `None` = noch keine von ECS erhalten.
+ * Version der aktiven Konfiguration, `None` = noch keine vom Server erhalten.
  */
 config_version: number | null, sensors: SensorValues, actuators: ActuatorStates, overrides: Overrides, 
 /**

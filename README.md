@@ -3,7 +3,7 @@
 Automatisierte Steuerung für ein Grow-Zelt: Temperatur, Bodenfeuchtigkeit und Lichtzyklus werden überwacht und geregelt, konfiguriert über eine WebUI.
 
 - **Board** (Raspberry Pi 3): liest die Sensoren, schaltet Heizung, Lampe und Pumpe und regelt eigenständig weiter, auch wenn der Server ausfällt.
-- **ECS** (Home-Server): WebUI, Konfiguration, Messdaten-Historie (InfluxDB) und Benachrichtigungen (ntfy).
+- **Server** (Home-Server): WebUI, Konfiguration, Messdaten-Historie (InfluxDB) und Benachrichtigungen (ntfy).
 
 ![Übersicht der Verdrahtung](hardware/wiring/overview.svg)
 
@@ -21,7 +21,7 @@ Automatisierte Steuerung für ein Grow-Zelt: Temperatur, Bodenfeuchtigkeit und L
 ```
 crates/shared   API-Typen (auch als TypeScript für das Frontend)
 crates/board    Board-Software
-crates/ecs      ECS-Backend
+crates/server   Server (Backend, liefert die WebUI aus)
 frontend        WebUI (React, Vite, TypeScript)
 hardware/wiring Verdrahtungspläne (WireViz)
 deploy          Compose-Dateien für Portainer
@@ -32,7 +32,7 @@ docs            Dokumentation
 
 ```bash
 cargo run -p autoweed-board        # Board-API auf :8080
-cargo run -p autoweed-ecs          # ECS-Backend auf :3000
+cargo run -p autoweed-server       # Server auf :3000
 cargo test -p autoweed-shared      # erzeugt frontend/src/generated/*.ts
 cd frontend && npm install && npm run dev
 ```

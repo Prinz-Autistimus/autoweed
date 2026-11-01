@@ -46,7 +46,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "autoweed-ecs"
+name = "autoweed-server"
 version = "0.2.3"
 dependencies = [
  "anyhow",

@@ -172,7 +172,7 @@ impl Controller {
             let mut shared = self.shared.lock().unwrap();
             (
                 shared.config.clone(),
-                shared.config_from_ecs,
+                shared.config_from_server,
                 std::mem::take(&mut shared.commands),
             )
         };
@@ -203,7 +203,7 @@ impl Controller {
         self.set_error(
             ErrorKind::NoConfig,
             !has_config,
-            "Noch keine Konfiguration von ECS, automatisches Gießen ist aus",
+            "Noch keine Konfiguration vom Server, automatisches Gießen ist aus",
         );
 
         let heater = self.decide_heater(&config, climate.map(|c| c.temperature_celsius));

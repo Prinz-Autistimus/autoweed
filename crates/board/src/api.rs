@@ -98,7 +98,7 @@ async fn put_config(
     let mut shared = state.shared.lock().unwrap();
     let version = config.version;
     shared.config = config;
-    shared.config_from_ecs = true;
+    shared.config_from_server = true;
     shared.buffer.push(BufferEntry::Event(Event {
         at: chrono::Utc::now(),
         kind: EventKind::ConfigApplied { version },

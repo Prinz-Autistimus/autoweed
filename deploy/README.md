@@ -3,10 +3,10 @@
 | Datei | Stack für | Inhalt |
 |---|---|---|
 | [pi-compose.yml](pi-compose.yml) | Raspberry Pi 3 (Board) | `autoweed-board`, Watchtower |
-| [host-compose.yml](host-compose.yml) | ECS | `autoweed-ecs`, InfluxDB, Watchtower |
+| [host-compose.yml](host-compose.yml) | Server | `autoweed-server`, InfluxDB, Watchtower |
 | [.env.example](.env.example) | beide | Variablen, die in Portainer gesetzt werden |
 
-Beide Stacks werden aus dem Portainer auf ECS verwaltet. Auf dem Pi läuft dafür nur der Portainer Agent.
+Beide Stacks werden aus dem Portainer auf dem Server verwaltet. Auf dem Pi läuft dafür nur der Portainer Agent.
 
 ## 1. Raspberry Pi vorbereiten
 
@@ -46,7 +46,7 @@ Beide Stacks werden aus dem Portainer auf ECS verwaltet. Auf dem Pi läuft dafü
 
 ## 2. Portainer Agent auf dem Pi
 
-Die Version muss zum Portainer auf ECS passen (derzeit **2.33.7**, nachsehen unter Portainer → Einstellungen bzw. unten links).
+Die Version muss zum Portainer auf dem Server passen (derzeit **2.33.7**, nachsehen unter Portainer → Einstellungen bzw. unten links).
 
 ```bash
 docker run -d --name portainer_agent --restart=always \
@@ -57,13 +57,13 @@ docker run -d --name portainer_agent --restart=always \
   portainer/agent:2.33.7
 ```
 
-Dann im **ECS-Portainer**: *Environments → Add environment → Docker Standalone → Agent*
+Dann im **Portainer des Servers**: *Environments → Add environment → Docker Standalone → Agent*
 - Name: `autoweed-pi`
 - Environment address: `<pi-ip>:9001`
 
 > Der Agent gibt vollen Zugriff auf Docker auf dem Pi. Er bindet sich an den ersten Portainer-Server, der sich verbindet. Deshalb den Pi direkt nach dem Start des Agents einbinden und Port 9001 nicht über den Router freigeben.
 
-Wird Portainer auf ECS aktualisiert, muss der Agent dieselbe Version bekommen: den Container löschen und den Befehl oben mit der neuen Version erneut ausführen.
+Wird Portainer auf dem Server aktualisiert, muss der Agent dieselbe Version bekommen: den Container löschen und den Befehl oben mit der neuen Version erneut ausführen.
 
 ## 3. Stacks anlegen
 
@@ -77,13 +77,13 @@ Die Werte für die Variablen erzeugt man mit `openssl rand -hex 32`. `BOARD_TOKE
 - Compose path: `deploy/pi-compose.yml`
 - Environment variables: `BOARD_TOKEN` (optional `CLIMATE_SENSOR`, `HEATER_PIN`, `LIGHT_PIN`, `PUMP_PIN`, `RELAY_ACTIVE_LOW`, `AUTOWEED_TAG`, `WATCHTOWER_INTERVAL`)
 
-### ECS (Umgebung `local`)
+### Server (Umgebung `local`)
 
 *Stacks → Add stack → Repository*, wie oben, aber:
 - Compose path: `deploy/host-compose.yml`
 - Environment variables: `BOARD_TOKEN`, `BOARD_URL`, `WEBUI_PASSWORD`, `NTFY_TOPIC`, `INFLUX_PASSWORD`, `INFLUX_TOKEN` (optional `PUBLIC_URL`, `AUTOWEED_PORT`, `NTFY_URL`, `POLL_INTERVAL_SECS`, `AUTOWEED_TAG`). `WEBUI_PASSWORD` braucht mindestens 8 Zeichen.
 
-Die WebUI ist dann unter `http://<ecs-ip>:8097` erreichbar. Für den Zugriff von außen wird im Nginx Proxy Manager ein Proxy Host auf diesen Port angelegt.
+Die WebUI ist dann unter `http://<server-ip>:8097` erreichbar. Für den Zugriff von außen wird im Nginx Proxy Manager ein Proxy Host auf diesen Port angelegt.
 
 ## 4. Lokal entwickeln (ohne Pi)
 
@@ -92,12 +92,12 @@ Die WebUI ist dann unter `http://<ecs-ip>:8097` erreichbar. Für den Zugriff von
 HARDWARE=sim SIM_SPEED=30 TIME_SYNC_FILE= BOARD_TOKEN=devtoken-1234567890 DATA_DIR=/tmp/aw-board \
   BIND_ADDR=127.0.0.1:8080 cargo run -p autoweed-board
 
-# ECS gegen das simulierte Board (braucht eine InfluxDB 2 auf :8086)
+# Server gegen das simulierte Board (braucht eine InfluxDB 2 auf :8086)
 WEBUI_PASSWORD=devpasswort BOARD_URL=http://127.0.0.1:8080 BOARD_TOKEN=devtoken-1234567890 \
   INFLUX_URL=http://127.0.0.1:8086 INFLUX_TOKEN=... NTFY_URL=http://127.0.0.1:9999 NTFY_TOPIC=test \
-  DATA_DIR=/tmp/aw-ecs BIND_ADDR=127.0.0.1:3000 cargo run -p autoweed-ecs
+  DATA_DIR=/tmp/aw-server BIND_ADDR=127.0.0.1:3000 cargo run -p autoweed-server
 
-cd frontend && npm run dev     # oder npm run build, dann liefert ECS die WebUI aus
+cd frontend && npm run dev     # oder npm run build, dann liefert der Server die WebUI aus
 ```
 
 ## 5. Updates
@@ -105,10 +105,19 @@ cd frontend && npm run dev     # oder npm run build, dann liefert ECS die WebUI 
 ```
 git tag v0.2.0 && git push --tags
    → GitHub Actions baut die Images → GHCR (:0.2.0, :0.2, :latest) + GitHub-Release
-   → Watchtower auf Pi und ECS holt das neue Image (innerhalb von WATCHTOWER_INTERVAL)
+   → Watchtower auf Pi und Server holt das neue Image (innerhalb von WATCHTOWER_INTERVAL)
 ```
 
 - `AUTOWEED_TAG=latest` (Standard): nur Releases.
 - `AUTOWEED_TAG=edge`: jeder Push auf `main`, gedacht zum Testen.
 
 Ändern sich die Compose-Dateien selbst, wird der Stack in Portainer neu deployt („Pull and redeploy“). Watchtower aktualisiert nur Images.
+
+### Einmalig: Umbenennung `autoweed-ecs` → `autoweed-server` (ab v0.2.4)
+
+Image, Container und Daten-Volume des Servers heißen jetzt `autoweed-server` bzw. `server-data`. Das alte Image `autoweed-ecs` bekommt keine Updates mehr.
+
+1. In der WebUI unter *Einstellungen* die Konfiguration **exportieren**.
+2. Den Server-Stack in Portainer durch die neue `host-compose.yml` ersetzen und deployen. Die Konfiguration startet mit Standardwerten (neues, leeres Volume), die InfluxDB-Daten bleiben erhalten.
+3. Die exportierte Konfiguration wieder **importieren**.
+4. Danach kann das alte Volume `autoweed_ecs-data` gelöscht werden (Portainer → Volumes) und das Paket `autoweed-ecs` auf GitHub (Packages).

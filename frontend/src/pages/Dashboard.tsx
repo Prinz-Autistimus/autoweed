@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { ApiFailure, api, post } from '../api'
 import { actuatorName, errorName, formatDateTime, formatNumber, formatTime, lightWindow } from '../format'
 import type { BoardConfig } from '../generated/BoardConfig'
-import type { EcsStatus } from '../generated/EcsStatus'
+import type { ServerStatus } from '../generated/ServerStatus'
 import type { Override } from '../generated/Override'
 
 const REFRESH_MS = 5000
@@ -48,13 +48,13 @@ function OverrideControls({
 }
 
 export default function Dashboard() {
-  const [status, setStatus] = useState<EcsStatus | null>(null)
+  const [status, setStatus] = useState<ServerStatus | null>(null)
   const [config, setConfig] = useState<BoardConfig | null>(null)
   const [pumpSecs, setPumpSecs] = useState(10)
   const [message, setMessage] = useState<string | null>(null)
 
   const load = useCallback(() => {
-    api<EcsStatus>('/api/status').then(setStatus).catch(() => {})
+    api<ServerStatus>('/api/status').then(setStatus).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function Dashboard() {
       {status.board_reachable && !status.config_synced && (
         <div className="banner">
           <strong>Konfiguration wird übertragen …</strong>
-          ECS hat v{status.config_version}, das Board nutzt {board?.config_version ? `v${board.config_version}` : 'noch keine'}.
+          Der Server hat v{status.config_version}, das Board nutzt {board?.config_version ? `v${board.config_version}` : 'noch keine'}.
         </div>
       )}
       {message && (

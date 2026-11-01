@@ -18,7 +18,7 @@ use tokio::sync::Notify;
 use tower_http::services::{ServeDir, ServeFile};
 use tower_http::set_header::SetResponseHeaderLayer;
 
-/// Was ECS zuletzt vom Board weiß.
+/// Was der Server zuletzt vom Board weiß.
 #[derive(Default)]
 pub struct Live {
     pub board_reachable: bool,
@@ -148,7 +148,7 @@ async fn main() -> Result<()> {
 
     let addr = env_or("BIND_ADDR", "0.0.0.0:3000");
     let listener = tokio::net::TcpListener::bind(&addr).await?;
-    tracing::info!("ECS-Backend lauscht auf {addr}");
+    tracing::info!("Server lauscht auf {addr}");
     axum::serve(
         listener,
         app.into_make_service_with_connect_info::<SocketAddr>(),

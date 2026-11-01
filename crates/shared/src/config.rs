@@ -1,7 +1,7 @@
-//! Konfiguration, die ECS verwaltet und an das Board schickt (`PUT /api/v1/config`).
+//! Konfiguration, die der Server verwaltet und an das Board schickt (`PUT /api/v1/config`).
 //!
 //! Das Board regelt ausschließlich mit dieser Konfiguration und der aktuellen
-//! Uhrzeit. Es hält selbst keinen Zustand, der von ECS abweichen könnte,
+//! Uhrzeit. Es hält selbst keinen Zustand, der vom Server abweichen könnte,
 //! z. B. wird die aktive Lichtphase aus den Angaben hier berechnet.
 
 use chrono::{DateTime, Utc};
@@ -11,8 +11,8 @@ use ts_rs::TS;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct BoardConfig {
-    /// Wird von ECS bei jeder Änderung erhöht. Das Board meldet die aktive
-    /// Version im Status, so erkennt ECS, ob die Konfiguration angekommen ist.
+    /// Wird vom Server bei jeder Änderung erhöht. Das Board meldet die aktive
+    /// Version im Status, so erkennt der Server, ob die Konfiguration angekommen ist.
     pub version: u32,
     /// Abstand zwischen zwei Messungen, 2–10 s.
     pub measure_interval_secs: u32,
@@ -100,7 +100,7 @@ pub struct LightPhase {
 const MINUTES_PER_DAY: u16 = 24 * 60;
 
 impl BoardConfig {
-    /// Prüft die Konfiguration, bevor ECS sie speichert bzw. das Board sie übernimmt.
+    /// Prüft die Konfiguration, bevor der Server sie speichert bzw. das Board sie übernimmt.
     /// Gibt alle Fehler auf einmal zurück, damit die WebUI sie gesammelt anzeigen kann.
     pub fn validate(&self) -> Result<(), Vec<String>> {
         let mut errors = Vec::new();

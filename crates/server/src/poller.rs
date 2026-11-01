@@ -86,7 +86,7 @@ async fn board_unreachable(state: &AppState, poller: &mut PollerState, err: &str
             .send(
                 Level::Problem,
                 "Board nicht erreichbar",
-                "ECS erreicht das Board nicht. Es regelt mit der letzten Konfiguration weiter, \
+                "Der Server erreicht das Board nicht. Es regelt mit der letzten Konfiguration weiter, \
                  Messwerte werden gepuffert.",
             )
             .await;
@@ -117,7 +117,7 @@ fn describe(kind: ErrorKind) -> &'static str {
 
 async fn notify_errors(state: &AppState, poller: &mut PollerState, status: &BoardStatus) {
     let now = Utc::now();
-    // NoConfig behebt ECS selbst, dafür gibt es keine Benachrichtigung.
+    // NoConfig behebt der Server selbst, dafür gibt es keine Benachrichtigung.
     let active: Vec<_> = status
         .errors
         .iter()

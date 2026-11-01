@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   server: {
-    // Im Dev-Modus gehen API-Aufrufe an das lokal laufende ECS-Backend.
+    // Im Dev-Modus gehen API-Aufrufe an das lokal laufenden Server.
     proxy: { '/api': 'http://localhost:3000' },
   },
 })

@@ -1,4 +1,4 @@
-//! Request- und Response-Typen der Board-API und der ECS-API.
+//! Request- und Response-Typen der Board-API und der Server-API.
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -50,7 +50,7 @@ pub enum ErrorKind {
     TimeSync,
     /// Feuchte steigt nach dem Gießen nicht, die Pumpe ist gesperrt.
     BucketEmpty,
-    /// Noch keine Konfiguration von ECS, automatisches Gießen ist aus.
+    /// Noch keine Konfiguration vom Server, automatisches Gießen ist aus.
     NoConfig,
     /// Ein Aktor ließ sich nicht schalten.
     Actuator,
@@ -73,7 +73,7 @@ pub struct BoardStatus {
     pub version: String,
     pub time: DateTime<Utc>,
     pub time_synced: bool,
-    /// Version der aktiven Konfiguration, `None` = noch keine von ECS erhalten.
+    /// Version der aktiven Konfiguration, `None` = noch keine vom Server erhalten.
     pub config_version: Option<u32>,
     pub sensors: SensorValues,
     pub actuators: ActuatorStates,
@@ -206,24 +206,24 @@ pub struct PumpRequest {
 pub const MAX_MANUAL_PUMP_SECS: u32 = 120;
 
 /// Längste manuelle Übersteuerung von Heizung oder Licht (24 h). Längere
-/// Anfragen kürzt das Board, ECS lehnt sie ab.
+/// Anfragen kürzt das Board, der Server lehnt sie ab.
 pub const MAX_OVERRIDE_MINUTES: u32 = 24 * 60;
 
 // ---------------------------------------------------------------------------
-// ECS-API (für das Frontend)
+// Server-API (für das Frontend)
 // ---------------------------------------------------------------------------
 
-/// `GET /api/status` (ECS).
+/// `GET /api/status` (Server).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
-pub struct EcsStatus {
+pub struct ServerStatus {
     pub board_reachable: bool,
     pub last_contact: Option<DateTime<Utc>>,
     /// Letzter bekannter Status des Boards (auch wenn es gerade nicht erreichbar ist).
     pub board: Option<BoardStatus>,
-    /// Version der auf ECS gespeicherten Konfiguration.
+    /// Version der auf dem Server gespeicherten Konfiguration.
     pub config_version: u32,
-    /// Das Board verwendet die auf ECS gespeicherte Version.
+    /// Das Board verwendet die auf dem Server gespeicherte Version.
     pub config_synced: bool,
 }
 
@@ -239,7 +239,7 @@ pub struct SessionInfo {
     pub authenticated: bool,
 }
 
-/// Fehlerantwort der ECS-API.
+/// Fehlerantwort der Server-API.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct ApiError {

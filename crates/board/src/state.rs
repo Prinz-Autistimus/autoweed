@@ -25,17 +25,17 @@ pub enum Command {
 pub struct Shared {
     pub config: BoardConfig,
     /// `false`, solange nur die Standardwerte gelten.
-    pub config_from_ecs: bool,
+    pub config_from_server: bool,
     pub status: BoardStatus,
     pub buffer: Buffer,
     pub commands: Vec<Command>,
 }
 
 impl Shared {
-    pub fn new(config: BoardConfig, config_from_ecs: bool, buffer: Buffer) -> Self {
+    pub fn new(config: BoardConfig, config_from_server: bool, buffer: Buffer) -> Self {
         Self {
             config,
-            config_from_ecs,
+            config_from_server,
             status: BoardStatus {
                 version: env!("CARGO_PKG_VERSION").into(),
                 time: chrono::Utc::now(),
@@ -55,7 +55,7 @@ impl Shared {
     }
 }
 
-/// Messwerte und Ereignisse, bis ECS sie abholt.
+/// Messwerte und Ereignisse, bis der Server sie abholt.
 pub struct Buffer {
     boot_id: u64,
     next_seq: u64,
@@ -79,7 +79,7 @@ impl Buffer {
         self.next_seq += 1;
     }
 
-    /// Verwirft alles bis `since` (von ECS bestätigt) und liefert den Rest.
+    /// Verwirft alles bis `since` (vom Server bestätigt) und liefert den Rest.
     pub fn take(&mut self, since: u64, boot_id: u64) -> MeasurementBatch {
         let since = if boot_id == self.boot_id { since } else { 0 };
         while self.entries.front().is_some_and(|(seq, _)| *seq <= since) {

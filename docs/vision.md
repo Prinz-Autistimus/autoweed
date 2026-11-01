@@ -9,15 +9,15 @@ Ausgelegt ist das System für **eine Pflanze** in **einem Grow-Zelt** (bis 1,8 m
 
 ## Legende
 - **Board-Computer / Board:** Raspberry Pi 3 (vorhanden) am Zelt. Liest die Sensoren, schaltet die Aktoren und regelt selbstständig.
-- **ECS:** Der Home-Server (OpenMediaVault + Docker). Hier laufen WebUI, Konfiguration, Datenbank und Benachrichtigungen.
+- **Server:** Der Home-Server (OpenMediaVault + Docker). Hier laufen WebUI, Konfiguration, Datenbank und Benachrichtigungen.
 - **(Sub-)Modul:** Sensoren und Aktoren, per Kabel mit dem Board verbunden.
 
 ## Aufbau
 
 Das System besteht aus zwei Programmen (Details in [architecture.md](architecture.md)):
 
-1. **Board-Software** (Rust, auf dem Raspberry Pi): Sie bietet eine HTTP-API, liest die Sensoren und schaltet die Aktoren. Mit der zuletzt von ECS erhaltenen Konfiguration regelt sie **eigenständig** weiter, auch wenn ECS oder das Netzwerk ausfallen.
-2. **ECS-Software** (Rust-Backend + React-Frontend, auf ECS): Sie stellt die WebUI bereit, verwaltet die Konfiguration, holt periodisch die Messwerte vom Board ab, speichert sie in InfluxDB und verschickt Benachrichtigungen über ntfy.
+1. **Board-Software** (Rust, auf dem Raspberry Pi): Sie bietet eine HTTP-API, liest die Sensoren und schaltet die Aktoren. Mit der zuletzt vom Server erhaltenen Konfiguration regelt sie **eigenständig** weiter, auch wenn der Server oder das Netzwerk ausfallen.
+2. **Server-Software** (Rust-Backend + React-Frontend, auf dem Server): Sie stellt die WebUI bereit, verwaltet die Konfiguration, holt periodisch die Messwerte vom Board ab, speichert sie in InfluxDB und verschickt Benachrichtigungen über ntfy.
 
 Das Board liegt oben auf dem Zelt und ist per LAN (über Devolo) mit dem Heimnetz verbunden.
 
@@ -49,10 +49,10 @@ Außerdem kann der Benutzer über die WebUI die Messdaten und Ereignisse (z. B. 
 ## Umsetzung/Anforderungen
 - **Entwicklung und Release:** Entwickelt wird mit Git, GitHub ist das (öffentliche) Remote. GitHub Actions baut die Docker-Images (Board: arm64) und veröffentlicht sie in der GitHub Container Registry (GHCR).
 - **Updates:** Watchtower holt neue Images automatisch, direkter Zugriff auf die Geräte ist nicht nötig.
-- **Konfiguration:** Sie liegt auf ECS in einem Docker-Volume und bleibt bei Updates erhalten. Das Board speichert die zuletzt erhaltene Konfiguration lokal.
-- **Ausfallsicherheit:** Bei einem Absturz der Software, bei Verlust von Netzwerk oder Internet und bei Ausfall von ECS muss das Überleben der Pflanze jederzeit sichergestellt sein. Ausgenommen sind Stromausfälle, weil dann das gesamte System aus ist. Danach muss es sich aber selbst erholen. Die Fail-Safe-Matrix steht in [architecture.md](architecture.md).
+- **Konfiguration:** Sie liegt auf dem Server in einem Docker-Volume und bleibt bei Updates erhalten. Das Board speichert die zuletzt erhaltene Konfiguration lokal.
+- **Ausfallsicherheit:** Bei einem Absturz der Software, bei Verlust von Netzwerk oder Internet und bei Ausfall des Servers muss das Überleben der Pflanze jederzeit sichergestellt sein. Ausgenommen sind Stromausfälle, weil dann das gesamte System aus ist. Danach muss es sich aber selbst erholen. Die Fail-Safe-Matrix steht in [architecture.md](architecture.md).
 - **Sensorausfall:** Fällt ein Sensor aus, wird er automatisch mit Back-off neu initialisiert (1 s → 2 s → 5 s → 10 s → 30 s → 60 s, danach alle 60 s). Jeder Fehler erscheint in der WebUI, ab der 10-s-Stufe kommt zusätzlich eine ntfy-Benachrichtigung.
-- **Benachrichtigungen:** Sie laufen über eine selbst gehostete ntfy-Instanz auf ECS.
+- **Benachrichtigungen:** Sie laufen über eine selbst gehostete ntfy-Instanz auf dem Server.
 - **Tests:** Zu Beginn gibt es keine automatisierten Tests.
 
 ## Physische Anforderungen

@@ -2,18 +2,18 @@
 import type { BoardStatus } from "./BoardStatus";
 
 /**
- * `GET /api/status` (ECS).
+ * `GET /api/status` (Server).
  */
-export type EcsStatus = { board_reachable: boolean, last_contact: string | null, 
+export type ServerStatus = { board_reachable: boolean, last_contact: string | null, 
 /**
  * Letzter bekannter Status des Boards (auch wenn es gerade nicht erreichbar ist).
  */
 board: BoardStatus | null, 
 /**
- * Version der auf ECS gespeicherten Konfiguration.
+ * Version der auf dem Server gespeicherten Konfiguration.
  */
 config_version: number, 
 /**
- * Das Board verwendet die auf ECS gespeicherte Version.
+ * Das Board verwendet die auf dem Server gespeicherte Version.
  */
 config_synced: boolean, };

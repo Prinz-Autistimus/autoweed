@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { ApiFailure, api, put } from '../api'
 import { localTimeToUtcMinute, utcMinuteToLocalTime } from '../format'
 import type { BoardConfig } from '../generated/BoardConfig'
-import type { EcsStatus } from '../generated/EcsStatus'
+import type { ServerStatus } from '../generated/ServerStatus'
 import type { LightPhase } from '../generated/LightPhase'
 import type { LightSchedule } from '../generated/LightSchedule'
 
@@ -68,7 +68,7 @@ export default function Settings() {
       setForm(c)
     })
     const loadRaw = () =>
-      api<EcsStatus>('/api/status')
+      api<ServerStatus>('/api/status')
         .then((s) => setSoilRaw(s.board?.sensors.soil_raw ?? null))
         .catch(() => {})
     loadRaw()

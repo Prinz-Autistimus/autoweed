@@ -4,8 +4,8 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use autoweed_shared::{
-    ApiError, BoardConfig, EcsStatus, Event, Health, History, LoginRequest, MAX_MANUAL_PUMP_SECS,
-    MAX_OVERRIDE_MINUTES, OverrideRequest, PumpRequest, RangeQuery, SessionInfo,
+    ApiError, BoardConfig, Event, Health, History, LoginRequest, MAX_MANUAL_PUMP_SECS,
+    MAX_OVERRIDE_MINUTES, OverrideRequest, PumpRequest, RangeQuery, ServerStatus, SessionInfo,
 };
 use axum::extract::{ConnectInfo, Path, Query, Request, State};
 use axum::http::{HeaderMap, StatusCode, header};
@@ -85,7 +85,7 @@ async fn require_session(
 
 async fn health() -> Json<Health> {
     Json(Health {
-        service: "ecs".into(),
+        service: "server".into(),
         version: env!("CARGO_PKG_VERSION").into(),
     })
 }
@@ -140,10 +140,10 @@ async fn session(State(state): State<Arc<AppState>>, headers: HeaderMap) -> Json
     })
 }
 
-async fn status(State(state): State<Arc<AppState>>) -> Json<EcsStatus> {
+async fn status(State(state): State<Arc<AppState>>) -> Json<ServerStatus> {
     let config_version = state.config.lock().unwrap().version;
     let live = state.live.lock().unwrap();
-    Json(EcsStatus {
+    Json(ServerStatus {
         board_reachable: live.board_reachable,
         last_contact: live.last_contact,
         board: live.board.clone(),

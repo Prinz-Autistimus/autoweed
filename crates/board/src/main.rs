@@ -80,11 +80,11 @@ async fn main() -> Result<()> {
     let hardware = build_hardware()?;
 
     let saved: Option<BoardConfig> = storage.load(api::CONFIG_FILE);
-    let config_from_ecs = saved.is_some();
+    let config_from_server = saved.is_some();
     let config = saved.unwrap_or_default();
     tracing::info!(
         "Konfiguration: {}",
-        if config_from_ecs {
+        if config_from_server {
             format!("v{} (gespeichert)", config.version)
         } else {
             "Standardwerte".into()
@@ -99,7 +99,7 @@ async fn main() -> Result<()> {
             version: env!("CARGO_PKG_VERSION").into(),
         },
     }));
-    let shared = Arc::new(Mutex::new(Shared::new(config, config_from_ecs, buffer)));
+    let shared = Arc::new(Mutex::new(Shared::new(config, config_from_server, buffer)));
 
     // Die Regelschleife läuft in einem eigenen Thread, unabhängig von der API.
     let stop = Arc::new(AtomicBool::new(false));
